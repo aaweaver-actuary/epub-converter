@@ -34,7 +34,7 @@ class EpubConverter:
         content = self._extract_plain_text(link_item.href)
         structure[title] = {"content": content}
 
-    def _extract_section_title(self, section_item: Tuple[epub.Section, List[Any]]) -> str:
+    def _extract_section_title(self, section_item: Tuple[epub.Section, List[Any]]) -> Union[str, Any]:
         return section_item[0].title
 
     def _extract_subsections_from_section(
