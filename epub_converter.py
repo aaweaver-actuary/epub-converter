@@ -2,10 +2,7 @@ from typing import Any, Dict, List, Tuple, Union
 from ebooklib import epub
 from bs4 import BeautifulSoup
 
-type EpubSection = epub.Section
-type EpubSectionItem = Tuple[EpubSection, List[Any]]
-
-type EpubTocItem = Union[epub.Link, EpubSectionItem]
+type EpubTocItem = Union[epub.Link, Tuple[epub.Section, List[Any]]]
 type EpubToc = List[EpubTocItem]
 
 
@@ -41,16 +38,16 @@ class EpubConverter:
         content = self._extract_plain_text(link_item.href)
         structure[title] = {"content": content}
 
-    def _extract_section_title(self, section_item: EpubSectionItem) -> str:
+    def _extract_section_title(self, section_item: Tuple[epub.Section, List[Any]]) -> str:
         return section_item[0].title
 
     def _extract_subsections_from_section(
-        self, section_item: EpubSectionItem
+        self, section_item: Tuple[epub.Section, List[Any]]
     ) -> List[EpubTocItem]:
         return section_item[1]
 
     def _add_section_content(
-        self, section_item: EpubSectionItem, structure: Dict[str, Any]
+        self, section_item: Tuple[epub.Section, List[Any]], structure: Dict[str, Any]
     ) -> None:
         section_title = self._extract_section_title(section_item)
         subsections = self._extract_subsections_from_section(section_item)
