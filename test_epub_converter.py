@@ -20,7 +20,7 @@ class TestEpubConverter(unittest.TestCase):
         book.set_language("en")
 
         # Chapter 1
-        c1 = _generate_ebub_element(
+        c1 = _generate_epub_element(
             "Chapter 1",
             "chap_01.xhtml",
             "en",
@@ -28,7 +28,7 @@ class TestEpubConverter(unittest.TestCase):
         )
 
         # Section 1.1
-        c1_1 = _generate_ebub_element(
+        c1_1 = _generate_epub_element(
             "Section 1.1",
             "chap_01_1.xhtml",
             "en",
@@ -36,7 +36,7 @@ class TestEpubConverter(unittest.TestCase):
         )
 
         # Chapter 2
-        c2 = _generate_ebub_element(
+        c2 = _generate_epub_element(
             "Chapter 2",
             "chap_02.xhtml",
             "en",
