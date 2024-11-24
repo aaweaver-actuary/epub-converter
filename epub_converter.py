@@ -41,7 +41,7 @@ class EpubConverter:
         html_content = self._get_document_content(href)
         return self._parse_plain_text(html_content)
 
-    def _get_document_content(self, href: str) -> str:
+    def _get_document_content(self, href: str) -> Union[Any, str]:
         document = self.book.get_item_with_href(href)
         if document:
             return document.get_content().decode('utf-8')
