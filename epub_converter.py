@@ -47,9 +47,18 @@ class EpubConverter:
     ) -> None:
         section_title = self._extract_section_title(section_item)
         subsections = self._extract_subsections_from_section(section_item)
+        section_structure: Dict[str, Any] = {}
+    
+        # Check if the section has an associated content link
+        if hasattr(section_item[0], 'href') and section_item[0].href:
+            content = self._extract_plain_text(section_item[0].href)
+            section_structure['content'] = content
+    
+        # Build structure for subsections
         subsection_structure = self._build_subsection_structure(subsections)
-        structure[section_title] = subsection_structure
-
+        section_structure.update(subsection_structure)
+    
+        structure[section_title] = section_structure
     def _extract_plain_text(self, href: str) -> str:
         html_content = self._get_document_content(href)
         return self._parse_plain_text_from_html(html_content)
