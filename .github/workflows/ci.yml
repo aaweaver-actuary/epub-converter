@@ -27,9 +27,8 @@ jobs:
 
       - name: Run Ruff
         run: |
-          ruff . --format text
-          # Uncomment the next line to automatically fix issues
-          # ruff . --fix
+          ruff format .
+          ruff check . 
 
   type-check:
     name: Type Checking with Mypy
