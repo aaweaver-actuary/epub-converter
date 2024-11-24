@@ -1,0 +1,9 @@
+[project]
+dependencies=["beautifulsoup4", "ebooklib", "types-beautifulsoup4"]
+description ="Converts EPUB to JSON"
+name        ="epub-converter"
+readme      ="README.md"
+version     ="0.1.0"
+
+[tool.uv]
+dev-dependencies=["coverage", "mypy", "pytest", "ruff"]
