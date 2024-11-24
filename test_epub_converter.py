@@ -48,12 +48,17 @@ class TestEpubConverter(unittest.TestCase):
 
         # Define Table of Contents
         book.toc = [
-            epub.Link("chap_01.xhtml", "Chapter 1", "chap_01"),
             (
-                epub.Section("Section 1.1"),
-                [epub.Link("chap_01_1.xhtml", "Section 1.1", "chap_01_1")],
+                epub.Section('Chapter 1'),
+                [
+                    epub.Link('chap_01.xhtml', 'Chapter 1', 'chap_01'),
+                    (
+                        epub.Section('Section 1.1'),
+                        [epub.Link('chap_01_1.xhtml', 'Section 1.1', 'chap_01_1')]
+                    )
+                ]
             ),
-            epub.Link("chap_02.xhtml", "Chapter 2", "chap_02"),
+            epub.Link('chap_02.xhtml', 'Chapter 2', 'chap_02')
         ]
 
         book.add_item(epub.EpubNcx())
