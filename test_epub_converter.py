@@ -5,7 +5,7 @@ import os
 import re
 
 
-def _generate_epub_element(title: str, file_name: str, lang: str, content: str) -> epub.Html:
+def _generate_epub_element(title: str, file_name: str, lang: str, content: str) -> epub.EpubHtml:
     element = epub.EpubHtml(title=title, file_name=file_name, lang=lang)
     element.content = content
     return element
