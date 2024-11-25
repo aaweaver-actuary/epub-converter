@@ -1,73 +1,120 @@
 from typing import Any, Dict, List, Tuple, Union
 from ebooklib import epub
 from bs4 import BeautifulSoup
+from functools import wraps
+
+EpubLink = epub.Link
+EpubSection = epub.Section
+EpubSectionWithSubsections = Tuple[
+    EpubSection, List[Union[EpubLink, Tuple[EpubSection, List[Any]]]]
+]
+EpubTocItem = Union[EpubLink, EpubSectionWithSubsections]
+EpubToc = List[EpubTocItem]
+EpubStructure = Dict[str, Any]
+
+
+def log_on_exception(message: str):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                raise Exception(f"{message}: {e}")
+
+        return wrapper
+
+    return decorator
+
 
 class EpubConverter:
-    def convert(self, epub_file: str) -> Dict[str, Any]:
+    def __init__(self, epub_file: str) -> None:
+        self.epub_file = epub_file
         self.book = epub.read_epub(epub_file)
+
+    def convert(self, epub_file: str) -> EpubStructure:
         return self._build_subsection_structure(self.book.toc)
 
-    def _build_subsection_structure(self, toc: List[Union[epub.Link, Tuple[epub.Section, List[Any]]]]) -> Dict[str, Any]:
-        structure: Dict[str, Any] = {}
+    def _build_subsection_structure(self, toc: EpubToc) -> EpubStructure:
+        structure = self._initialize_section_structure()
+        return self._process_toc_items(toc, structure)
+
+    def _initialize_section_structure(self) -> EpubStructure:
+        return {}
+
+    def _process_toc_items(
+        self, toc: EpubToc, structure: EpubStructure
+    ) -> EpubStructure:
         for item in toc:
             self._process_toc_item(item, structure)
         return structure
 
-    def _process_toc_item(
-        self, item: Union[epub.Link, Tuple[epub.Section, List[Any]]], structure: Dict[str, Any]
-    ) -> None:
-        if self._is_epub_link(item):
-            self._add_link_content(item, structure)
-        elif self._is_section(item):
-            self._add_section_content(item, structure)
+    def _process_toc_item(self, item: EpubTocItem, structure: EpubStructure) -> None:
+        if self._is_item_of_type_epub_link(item):
+            self._add_link_content_to_structure(item, structure)
+        elif self._is_item_of_type_section(item):
+            self._add_section_content_to_structure(item, structure)
 
-    def _is_epub_link(self, item: Union[epub.Link, Tuple[epub.Section, List[Any]]]) -> bool:
+    def _is_item_of_type_epub_link(self, item: EpubTocItem) -> bool:
         return isinstance(item, epub.Link)
 
-    def _is_section(self, item: Union[epub.Link, Tuple[epub.Section, List[Any]]]) -> bool:
+    def _is_item_of_type_section(self, item: EpubTocItem) -> bool:
         return isinstance(item, tuple)
 
-    def _add_link_content(
-        self, link_item: epub.Link, structure: Dict[str, Any]
+    def _add_link_content_to_structure(
+        self, link_item: EpubLink, structure: EpubStructure
     ) -> None:
         title = link_item.title
-        content = self._extract_plain_text(link_item.href)
+        content = self._get_plain_text_from_html(link_item.href)
         structure[title] = {"content": content}
 
-    def _extract_section_title(self, section_item: Tuple[epub.Section, List[Any]]) -> Union[str, Any]:
+    def _get_section_title(
+        self, section_item: EpubSectionWithSubsections
+    ) -> Union[str, Any]:
         return section_item[0].title
 
-    def _extract_subsections_from_section(
-        self, section_item: Tuple[epub.Section, List[Any]]
-    ) -> List[Union[epub.Link, Tuple[epub.Section, List[Any]]]]:
+    def _get_subsections_from_section(
+        self, section_item: EpubSectionWithSubsections
+    ) -> EpubToc:
         return section_item[1]
 
-    def _add_section_content(
-        self, section_item: Tuple[epub.Section, List[Any]], structure: Dict[str, Any]
+    def _add_section_content_to_structure(
+        self, section_item: EpubSectionWithSubsections, structure: EpubStructure
     ) -> None:
-        section_title = self._extract_section_title(section_item)
-        subsections = self._extract_subsections_from_section(section_item)
-        section_structure: Dict[str, Any] = {}
-    
-        # Check if the section has an associated content link
-        if hasattr(section_item[0], 'href') and section_item[0].href:
-            content = self._extract_plain_text(section_item[0].href)
-            section_structure['content'] = content
-    
-        # Build structure for subsections
-        subsection_structure = self._build_subsection_structure(subsections)
-        section_structure.update(subsection_structure)
-    
-        structure[section_title] = section_structure
-    def _extract_plain_text(self, href: str) -> str:
+        section_structure = self._initialize_section_structure()
+
+        if self._has_link_to_content(section_item):
+            section_structure["content"] = self._get_plain_text_from_html(
+                section_item[0].href
+            )
+
+        self._build_subsections_recursively(section_structure, section_item)
+
+        structure[self._get_section_title(section_item)] = section_structure
+
+    def _has_link_to_content(self, section_item: EpubSectionWithSubsections) -> bool:
+        return hasattr(section_item[0], "href") and section_item[0].href
+
+    def _build_subsections_recursively(
+        self,
+        section_structure: Dict[str, Any],
+        section_item: Tuple[epub.Section, List[Any]],
+    ) -> None:
+        return section_structure.update(
+            self._build_subsection_structure(
+                self._get_subsections_from_section(section_item)
+            )
+        )
+
+    def _get_plain_text_from_html(self, href: str) -> str:
         html_content = self._get_document_content(href)
         return self._parse_plain_text_from_html(html_content)
 
+    @log_on_exception("in method _get_document_content")
     def _get_document_content(self, href: str) -> Union[Any, str]:
         document = self.book.get_item_with_href(href)
         if document:
             return document.get_content().decode("utf-8")
-        return ""
 
     def _parse_plain_text_from_html(self, html_content: str) -> str:
         soup = BeautifulSoup(html_content, "html.parser")

@@ -1,0 +1,1076 @@
+{
+    "Foreword": {
+        "content": ""
+    },
+    "Introduction": {
+        "content": ""
+    },
+    "On the Cover": {
+        "content": ""
+    },
+    "Chapter 1: Clean Code": {
+        "content": "1\nClean Code\n\u00a0\n\n\n\u00a0\n\n\nYou are reading this book for two reasons. First, you are a programmer. Second, you want to be a better programmer. Good. We need better programmers.\n\n\nThis is a book about good programming. It is filled with code. We are going to look at code from every different direction. We\u2019ll look down at it from the top, up at it from the bottom, and through it from the inside out. By the time we are done, we\u2019re going to know a lot about code. What\u2019s more, we\u2019ll be able to tell the difference between good code and bad code. We\u2019ll know how to write good code. And we\u2019ll know how to transform bad code into good code.",
+        "There Will Be Code": {
+            "content": ""
+        },
+        "Bad Code": {
+            "content": ""
+        },
+        "The Total Cost of Owning a Mess": {
+            "content": "",
+            "The Grand Redesign in the Sky": {
+                "content": ""
+            },
+            "Attitude": {
+                "content": ""
+            },
+            "The Primal Conundrum": {
+                "content": ""
+            },
+            "The Art of Clean Code?": {
+                "content": ""
+            },
+            "What Is Clean Code?": {
+                "content": ""
+            }
+        },
+        "Schools of Thought": {
+            "content": ""
+        },
+        "We Are Authors": {
+            "content": ""
+        },
+        "The Boy Scout Rule": {
+            "content": ""
+        },
+        "Prequel and Principles": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 2: Meaningful Names": {
+        "content": "2\nMeaningful Names\n\u00a0\n\n\nby Tim Ottinger",
+        "Introduction": {
+            "content": ""
+        },
+        "Use Intention-Revealing Names": {
+            "content": ""
+        },
+        "Avoid Disinformation": {
+            "content": ""
+        },
+        "Make Meaningful Distinctions": {
+            "content": ""
+        },
+        "Use Pronounceable Names": {
+            "content": ""
+        },
+        "Use Searchable Names": {
+            "content": ""
+        },
+        "Avoid Encodings": {
+            "content": "",
+            "Hungarian Notation": {
+                "content": ""
+            },
+            "Member Prefixes": {
+                "content": ""
+            },
+            "Interfaces and Implementations": {
+                "content": ""
+            }
+        },
+        "Avoid Mental Mapping": {
+            "content": ""
+        },
+        "Class Names": {
+            "content": ""
+        },
+        "Method Names": {
+            "content": ""
+        },
+        "Don\u2019t Be Cute": {
+            "content": ""
+        },
+        "Pick One Word per Concept": {
+            "content": ""
+        },
+        "Don\u2019t Pun": {
+            "content": ""
+        },
+        "Use Solution Domain Names": {
+            "content": ""
+        },
+        "Use Problem Domain Names": {
+            "content": ""
+        },
+        "Add Meaningful Context": {
+            "content": ""
+        },
+        "Don\u2019t Add Gratuitous Context": {
+            "content": ""
+        },
+        "Final Words": {
+            "content": ""
+        }
+    },
+    "Chapter 3: Functions": {
+        "content": "3\nFunctions\n\u00a0\n\n\n\u00a0\n\n\nIn the early days of programming we composed our systems of routines and subroutines. Then, in the era of Fortran and PL/1 we composed our systems of programs, subprograms, and functions. Nowadays only the function survives from those early days. Functions are the first line of organization in any program. Writing them well is the topic of this chapter.\n\n\nConsider the code in \nListing 3-1\n. It\u2019s hard to find a long function in FitNesse,\n1\n but after a bit of searching I came across this one. Not only is it long, but it\u2019s got duplicated code, lots of odd strings, and many strange and inobvious data types and APIs. See how much sense you can make of it in the next three minutes.\n\n\n1. An open-source testing tool. \nwww.fitnese.org\n\n\n\n\nListing 3-1 \nHtmlUtil.java (FitNesse 20070619)\n\u00a0\n\n\n\u00a0\u00a0\u00a0public static String testableHtml(\n\u00a0\u00a0\u00a0\u00a0\u00a0PageData pageData,\n\u00a0\u00a0\u00a0\u00a0\u00a0boolean includeSuiteSetup\n\u00a0\u00a0\u00a0) throws Exception {\n\u00a0\u00a0\u00a0\u00a0\u00a0WikiPage wikiPage = pageData.getWikiPage();\n\u00a0\u00a0\u00a0\u00a0\u00a0StringBuffer buffer = new StringBuffer();\n\u00a0\u00a0\u00a0\u00a0\u00a0if (pageData.hasAttribute(\"Test\")) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0if (includeSuiteSetup) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPage suiteSetup =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0PageCrawlerImpl.getInheritedPage(\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0SuiteResponder.SUITE_SETUP_NAME, wikiPage\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0if (suiteSetup != null) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPagePath pagePath =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0suiteSetup.getPageCrawler().getFullPath(suiteSetup);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0String pagePathName = PathParser.render(pagePath);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0buffer.append(\"!include -setup .\")\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(pagePathName)\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(\"\\n\");\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPage setup = \n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0PageCrawlerImpl.getInheritedPage(\"SetUp\", wikiPage);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0if (setup != null) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPagePath setupPath =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0wikiPage.getPageCrawler().getFullPath(setup);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0String setupPathName = PathParser.render(setupPath);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0buffer.append(\"!include -setup .\")\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(setupPathName)\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(\"\\n\");\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0buffer.append(pageData.getContent());\n\u00a0\u00a0\u00a0\u00a0\u00a0if (pageData.hasAttribute(\"Test\")) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPage teardown = \n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0PageCrawlerImpl.getInheritedPage(\"TearDown\", wikiPage);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0if (teardown != null) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPagePath tearDownPath =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0wikiPage.getPageCrawler().getFullPath(teardown);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0String tearDownPathName = PathParser.render(tearDownPath);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0buffer.append(\"\\n\")\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(\"!include -teardown .\")\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(tearDownPathName)\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(\"\\n\");\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0if (includeSuiteSetup) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPage suiteTeardown =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0PageCrawlerImpl.getInheritedPage(\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0SuiteResponder.SUITE_TEARDOWN_NAME,\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0wikiPage\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0if (suiteTeardown != null) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPagePath pagePath =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0suiteTeardown.getPageCrawler().getFullPath (suiteTeardown);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0String pagePathName = PathParser.render(pagePath);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0buffer.append(\"!include -teardown .\")\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(pagePathName)\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0.append(\"\\n\");\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0pageData.setContent(buffer.toString());\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0return pageData.getHtml();\n\u00a0\u00a0\u00a0}\n\n\nDo you understand the function after three minutes of study? Probably not. There\u2019s too much going on in there at too many different levels of abstraction. There are strange strings and odd function calls mixed in with doubly nested \nif\n statements controlled by flags.\n\n\nHowever, with just a few simple method extractions, some renaming, and a little restructuring, I was able to capture the intent of the function in the nine lines of \nListing 3-2\n. See whether you can understand \nthat\n in the next 3 minutes.\n\n\n\n\nListing 3-2 \nHtmlUtil.java (refactored)\n\u00a0\n\n\n\u00a0\u00a0\u00a0public static String renderPageWithSetupsAndTeardowns(\n\u00a0\u00a0\u00a0\u00a0\u00a0PageData pageData, boolean isSuite\n\u00a0\u00a0\u00a0) throws Exception {\n\u00a0\u00a0\u00a0\u00a0\u00a0boolean isTestPage = pageData.hasAttribute(\"Test\");\n\u00a0\u00a0\u00a0\u00a0\u00a0if (isTestPage) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0WikiPage testPage = pageData.getWikiPage();\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0StringBuffer newPageContent = new StringBuffer();\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0includeSetupPages(testPage, newPageContent, isSuite);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0newPageContent.append(pageData.getContent());\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0includeTeardownPages(testPage, newPageContent, isSuite);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0pageData.setContent(newPageContent.toString());\n\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0\u00a0\n\u00a0\u00a0\u00a0\u00a0\u00a0return pageData.getHtml();\n\u00a0\u00a0\u00a0}\n\n\nUnless you are a student of FitNesse, you probably don\u2019t understand all the details. Still, you probably understand that this function performs the inclusion of some setup and teardown pages into a test page and then renders that page into HTML. If you are familiar with JUnit,\n2\n you probably realize that this function belongs to some kind of Web-based testing framework. And, of course, that is correct. Divining that information from \nListing 3-2\n is pretty easy, but it\u2019s pretty well obscured by \nListing 3-1\n.\n\n\n2. An open-source unit-testing tool for Java. \nwww.junit.org\n\n\nSo what is it that makes a function like \nListing 3-2\n easy to read and understand? How can we make a function communicate its intent? What attributes can we give our functions that will allow a casual reader to intuit the kind of program they live inside?",
+        "Small!": {
+            "content": "",
+            "Blocks and Indenting": {
+                "content": ""
+            }
+        },
+        "Do One Thing": {
+            "content": "",
+            "Sections within Functions": {
+                "content": ""
+            }
+        },
+        "One Level of Abstraction per Function": {
+            "content": "",
+            "Reading Code from Top to Bottom: The Stepdown Rule": {
+                "content": ""
+            }
+        },
+        "Switch Statements": {
+            "content": ""
+        },
+        "Use Descriptive Names": {
+            "content": ""
+        },
+        "Function Arguments": {
+            "content": "",
+            "Common Monadic Forms": {
+                "content": ""
+            },
+            "Flag Arguments": {
+                "content": ""
+            },
+            "Dyadic Functions": {
+                "content": ""
+            },
+            "Triads": {
+                "content": ""
+            },
+            "Argument Objects": {
+                "content": ""
+            },
+            "Argument Lists": {
+                "content": ""
+            },
+            "Verbs and Keywords": {
+                "content": ""
+            }
+        },
+        "Have No Side Effects": {
+            "content": "",
+            "Output Arguments": {
+                "content": ""
+            }
+        },
+        "Command Query Separation": {
+            "content": ""
+        },
+        "Prefer Exceptions to Returning Error Codes": {
+            "content": "",
+            "Extract Try/Catch Blocks": {
+                "content": ""
+            },
+            "Error Handling Is One Thing": {
+                "content": ""
+            },
+            "The Error.java Dependency Magnet": {
+                "content": ""
+            }
+        },
+        "Don\u2019t Repeat Yourself": {
+            "content": ""
+        },
+        "Structured Programming": {
+            "content": ""
+        },
+        "How Do You Write Functions Like This?": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "SetupTeardownIncluder": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 4: Comments": {
+        "content": "4\nComments\n\u00a0\n\n\n\u00a0\n\n\n\u201cDon\u2019t comment bad code\u2014rewrite it.\u201d\n\n\n\u2014Brian W. Kernighan and P. J. Plaugher\n1\n\n\n1. [\nKP78\n], p. \n144\n.\n\n\nNothing can be quite so helpful as a well-placed comment. Nothing can clutter up a module more than frivolous dogmatic comments. Nothing can be quite so damaging as an old crufty comment that propagates lies and misinformation.\n\n\nComments are not like Schindler\u2019s List. They are not \u201cpure good.\u201d Indeed, comments are, at best, a necessary evil. If our programming languages were expressive enough, or if \nwe had the talent to subtly wield those languages to express our intent, we would not need comments very much\u2014perhaps not at all.\n\n\nThe proper use of comments is to compensate for our failure to express ourself in code. Note that I used the word \nfailure\n. I meant it. Comments are always failures. We must have them because we cannot always figure out how to express ourselves without them, but their use is not a cause for celebration.\n\n\nSo when you find yourself in a position where you need to write a comment, think it through and see whether there isn\u2019t some way to turn the tables and express yourself in code. Every time you express yourself in code, you should pat yourself on the back. Every time you write a comment, you should grimace and feel the failure of your ability of expression.\n\n\nWhy am I so down on comments? Because they lie. Not always, and not intentionally, but too often. The older a comment is, and the farther away it is from the code it describes, the more likely it is to be just plain wrong. The reason is simple. Programmers can\u2019t realistically maintain them.\n\n\nCode changes and evolves. Chunks of it move from here to there. Those chunks bifurcate and reproduce and come together again to form chimeras. Unfortunately the comments don\u2019t always follow them\u2014\ncan\u2019t\n always follow them. And all too often the comments get separated from the code they describe and become orphaned blurbs of ever-decreasing accuracy. For example, look what has happened to this comment and the line it was intended to describe:\n\n\n\u00a0\u00a0\u00a0MockRequest request;\n\u00a0\u00a0\u00a0private final String HTTP_DATE_REGEXP =\n\u00a0\u00a0\u00a0\u00a0\u00a0\u201c[SMTWF][a-z]{2}\\\\,\\\\s[0-9]{2}\\\\s[JFMASOND][a-z]{2}\\\\s\u201d+\n\u00a0\u00a0\u00a0\u00a0\u00a0\u201c[0-9]{4}\\\\s[0-9]{2}\\\\:[0-9]{2}\\\\:[0-9]{2}\\\\sGMT\u201d;\n\u00a0\u00a0\u00a0private Response response;\n\u00a0\u00a0\u00a0private FitNesseContext context;\n\u00a0\u00a0\u00a0private FileResponder responder;\n\u00a0\u00a0\u00a0private Locale saveLocale;\n\u00a0\u00a0\u00a0\n// Example: \u201dTue, 02 Apr 2003 22:18:49 GMT\u201d\n\n\nOther instance variables that were probably added later were interposed between the \nHTTP_DATE_REGEXP\n constant and it\u2019s explanatory comment.\n\n\nIt is possible to make the point that programmers should be disciplined enough to keep the comments in a high state of repair, relevance, and accuracy. I agree, they should. But I would rather that energy go toward making the code so clear and expressive that it does not need the comments in the first place.\n\n\nInaccurate comments are far worse than no comments at all. They delude and mislead. They set expectations that will never be fulfilled. They lay down old rules that need not, or should not, be followed any longer.\n\n\nTruth can only be found in one place: the code. Only the code can truly tell you what it does. It is the only source of truly accurate information. Therefore, though comments are sometimes necessary, we will expend significant energy to minimize them.",
+        "Comments Do Not Make Up for Bad Code": {
+            "content": ""
+        },
+        "Explain Yourself in Code": {
+            "content": ""
+        },
+        "Good Comments": {
+            "content": "",
+            "Legal Comments": {
+                "content": ""
+            },
+            "Informative Comments": {
+                "content": ""
+            },
+            "Explanation of Intent": {
+                "content": ""
+            },
+            "Clarification": {
+                "content": ""
+            },
+            "Warning of Consequences": {
+                "content": ""
+            },
+            "TODO Comments": {
+                "content": ""
+            },
+            "Amplification": {
+                "content": ""
+            },
+            "Javadocs in Public APIs": {
+                "content": ""
+            }
+        },
+        "Bad Comments": {
+            "content": "",
+            "Mumbling": {
+                "content": ""
+            },
+            "Redundant Comments": {
+                "content": ""
+            },
+            "Misleading Comments": {
+                "content": ""
+            },
+            "Mandated Comments": {
+                "content": ""
+            },
+            "Journal Comments": {
+                "content": ""
+            },
+            "Noise Comments": {
+                "content": ""
+            },
+            "Scary Noise": {
+                "content": ""
+            },
+            "Don\u2019t Use a Comment When You Can Use a Function or a Variable": {
+                "content": ""
+            },
+            "Position Markers": {
+                "content": ""
+            },
+            "Closing Brace Comments": {
+                "content": ""
+            },
+            "Attributions and Bylines": {
+                "content": ""
+            },
+            "Commented-Out Code": {
+                "content": ""
+            },
+            "HTML Comments": {
+                "content": ""
+            },
+            "Nonlocal Information": {
+                "content": ""
+            },
+            "Too Much Information": {
+                "content": ""
+            },
+            "Inobvious Connection": {
+                "content": ""
+            },
+            "Function Headers": {
+                "content": ""
+            },
+            "Javadocs in Nonpublic Code": {
+                "content": ""
+            },
+            "Example": {
+                "content": ""
+            }
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 5: Formatting": {
+        "content": "5\nFormatting\n\u00a0\n\n\n\u00a0\n\n\nWhen people look under the hood, we want them to be impressed with the neatness, consistency, and attention to detail that they perceive. We want them to be struck by the orderliness. We want their eyebrows to rise as they scroll through the modules. We want them to perceive that professionals have been at work. If instead they see a scrambled mass of code that looks like it was written by a bevy of drunken sailors, then they are likely to conclude that the same inattention to detail pervades every other aspect of the project.\n\n\nYou should take care that your code is nicely formatted. You should choose a set of simple rules that govern the format of your code, and then you should consistently apply those rules. If you are working on a team, then the team should agree to a single set of formatting rules and all members should comply. It helps to have an automated tool that can apply those formatting rules for you.",
+        "The Purpose of Formatting": {
+            "content": ""
+        },
+        "Vertical Formatting": {
+            "content": "",
+            "The Newspaper Metaphor": {
+                "content": ""
+            },
+            "Vertical Openness Between Concepts": {
+                "content": ""
+            },
+            "Vertical Density": {
+                "content": ""
+            },
+            "Vertical Distance": {
+                "content": ""
+            },
+            "Vertical Ordering": {
+                "content": ""
+            }
+        },
+        "Horizontal Formatting": {
+            "content": "",
+            "Horizontal Openness and Density": {
+                "content": ""
+            },
+            "Horizontal Alignment": {
+                "content": ""
+            },
+            "Indentation": {
+                "content": ""
+            },
+            "Dummy Scopes": {
+                "content": ""
+            }
+        },
+        "Team Rules": {
+            "content": ""
+        },
+        "Uncle Bob\u2019s Formatting Rules": {
+            "content": ""
+        }
+    },
+    "Chapter 6: Objects and Data Structures": {
+        "content": "6\nObjects and Data Structures\n\u00a0\n\n\n\u00a0\n\n\nThere is a reason that we keep our variables private. We don\u2019t want anyone else to depend on them. We want to keep the freedom to change their type or implementation on a whim or an impulse. Why, then, do so many programmers automatically add getters and setters to their objects, exposing their private variables as if they were public?",
+        "Data Abstraction": {
+            "content": ""
+        },
+        "Data/Object Anti-Symmetry": {
+            "content": ""
+        },
+        "The Law of Demeter": {
+            "content": "",
+            "Train Wrecks": {
+                "content": ""
+            },
+            "Hybrids": {
+                "content": ""
+            },
+            "Hiding Structure": {
+                "content": ""
+            }
+        },
+        "Data Transfer Objects": {
+            "content": "",
+            "Active Record": {
+                "content": ""
+            }
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 7: Error Handling": {
+        "content": "7\nError Handling\n\u00a0\n\n\nby Michael Feathers\n\u00a0\n\n\n\u00a0\n\n\nIt might seem odd to have a section about error handling in a book about clean code. Error handling is just one of those things that we all have to do when we program. Input can be abnormal and devices can fail. In short, things can go wrong, and when they do, we as programmers are responsible for making sure that our code does what it needs to do.\n\n\nThe connection to clean code, however, should be clear. Many code bases are completely dominated by error handling. When I say dominated, I don\u2019t mean that error handling is all that they do. I mean that it is nearly impossible to see what the code does because of all of the scattered error handling. Error handling is important, \nbut if it obscures logic, it\u2019s wrong\n.\n\n\nIn this chapter I\u2019ll outline a number of techniques and considerations that you can use to write code that is both clean and robust\u2014code that handles errors with grace and style.",
+        "Use Exceptions Rather Than Return Codes": {
+            "content": ""
+        },
+        "Write Your Try-Catch-Finally Statement First": {
+            "content": ""
+        },
+        "Use Unchecked Exceptions": {
+            "content": ""
+        },
+        "Provide Context with Exceptions": {
+            "content": ""
+        },
+        "Define Exception Classes in Terms of a Caller\u2019s Needs": {
+            "content": ""
+        },
+        "Define the Normal Flow": {
+            "content": ""
+        },
+        "Don\u2019t Return Null": {
+            "content": ""
+        },
+        "Don\u2019t Pass Null": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 8: Boundaries": {
+        "content": "8\nBoundaries\n\u00a0\n\n\nby James Grenning\n\u00a0\n\n\n\u00a0\n\n\nWe seldom control all the software in our systems. Sometimes we buy third-party packages or use open source. Other times we depend on teams in our own company to produce components or subsystems for us. Somehow we must cleanly integrate this foreign code \nwith our own. In this chapter we look at practices and techniques to keep the boundaries of our software clean.",
+        "Using Third-Party Code": {
+            "content": ""
+        },
+        "Exploring and Learning Boundaries": {
+            "content": ""
+        },
+        "Learning log4j": {
+            "content": ""
+        },
+        "Learning Tests Are Better Than Free": {
+            "content": ""
+        },
+        "Using Code That Does Not Yet Exist": {
+            "content": ""
+        },
+        "Clean Boundaries": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 9: Unit Tests": {
+        "content": "9\nUnit Tests\n\u00a0\n\n\n\u00a0\n\n\nOur profession has come a long way in the last ten years. In 1997 no one had heard of Test Driven Development. For the vast majority of us, unit tests were short bits of throw-away code that we wrote to make sure our programs \u201cworked.\u201d We would painstakingly write our classes and methods, and then we would concoct some ad hoc code to test them. Typically this would involve some kind of simple driver program that would allow us to manually interact with the program we had written.\n\n\nI remember writing a C++ program for an embedded real-time system back in the mid-90s. The program was a simple timer with the following signature:\n\n\n\u00a0\u00a0\u00a0void Timer::ScheduleCommand(Command* theCommand, int milliseconds)\n\n\nThe idea was simple; the \nexecute\n method of the \nCommand\n would be executed in a new thread after the specified number of milliseconds. The problem was, how to test it.\n\n\nI cobbled together a simple driver program that listened to the keyboard. Every time a character was typed, it would schedule a command that would type the same character five seconds later. Then I tapped out a rhythmic melody on the keyboard and waited for that melody to replay on the screen five seconds later.\n\n\n\u201cI \u2026 want-a-girl \u2026 just \u2026 like-the-girl-who-marr \u2026 ied \u2026 dear \u2026 old \u2026 dad.\u201d\n\n\nI actually sang that melody while typing the \u201c.\u201d key, and then I sang it again as the dots appeared on the screen.\n\n\nThat was my test! Once I saw it work and demonstrated it to my colleagues, I threw the test code away.\n\n\nAs I said, our profession has come a long way. Nowadays I would write a test that made sure that every nook and cranny of that code worked as I expected it to. I would isolate my code from the operating system rather than just calling the standard timing functions. I would mock out those timing functions so that I had absolute control over the time. I would schedule commands that set boolean flags, and then I would step the time forward, watching those flags and ensuring that they went from false to true just as I changed the time to the right value.\n\n\nOnce I got a suite of tests to pass, I would make sure that those tests were convenient to run for anyone else who needed to work with the code. I would ensure that the tests and the code were checked in together into the same source package.\n\n\nYes, we\u2019ve come a long way; but we have farther to go. The Agile and TDD movements have encouraged many programmers to write automated unit tests, and more are joining their ranks every day. But in the mad rush to add testing to our discipline, many programmers have missed some of the more subtle, and important, points of writing good tests.",
+        "The Three Laws of TDD": {
+            "content": ""
+        },
+        "Keeping Tests Clean": {
+            "content": "",
+            "Tests Enable the -ilities": {
+                "content": ""
+            }
+        },
+        "Clean Tests": {
+            "content": "",
+            "Domain-Specific Testing Language": {
+                "content": ""
+            },
+            "A Dual Standard": {
+                "content": ""
+            }
+        },
+        "One Assert per Test": {
+            "content": "",
+            "Single Concept per Test": {
+                "content": ""
+            }
+        },
+        "F.I.R.S.T.": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 10: Classes": {
+        "content": "10\nClasses\n\u00a0\n\n\nwith Jeff Langr\n\u00a0\n\n\n\u00a0\n\n\nSo far in this book we have focused on how to write lines and blocks of code well. We have delved into proper composition of functions and how they interrelate. But for all the attention to the expressiveness of code statements and the functions they comprise, we still don\u2019t have clean code until we\u2019ve paid attention to higher levels of code organization. Let\u2019s talk about clean classes.",
+        "Class Organization": {
+            "content": "",
+            "Encapsulation": {
+                "content": ""
+            }
+        },
+        "Classes Should Be Small!": {
+            "content": "",
+            "The Single Responsibility Principle": {
+                "content": ""
+            },
+            "Cohesion": {
+                "content": ""
+            },
+            "Maintaining Cohesion Results in Many Small Classes": {
+                "content": ""
+            }
+        },
+        "Organizing for Change": {
+            "content": "",
+            "Isolating from Change": {
+                "content": ""
+            }
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 11: Systems": {
+        "content": "11\nSystems\n\u00a0\n\n\nby Dr. Kevin Dean Wampler\n\u00a0\n\n\n\u00a0\n\n\n\u201cComplexity kills. It sucks the life out of developers, it makes products difficult to plan, build, and test.\u201d\n\u00a0\n\n\n\u2014Ray Ozzie, CTO, Microsoft Corporation",
+        "How Would You Build a City?": {
+            "content": ""
+        },
+        "Separate Constructing a System from Using It": {
+            "content": "",
+            "Separation of Main": {
+                "content": ""
+            },
+            "Factories": {
+                "content": ""
+            },
+            "Dependency Injection": {
+                "content": ""
+            }
+        },
+        "Scaling Up": {
+            "content": "",
+            "Cross-Cutting Concerns": {
+                "content": ""
+            }
+        },
+        "Java Proxies": {
+            "content": ""
+        },
+        "Pure Java AOP Frameworks": {
+            "content": ""
+        },
+        "AspectJ Aspects": {
+            "content": ""
+        },
+        "Test Drive the System Architecture": {
+            "content": ""
+        },
+        "Optimize Decision Making": {
+            "content": ""
+        },
+        "Use Standards Wisely, When They Add Demonstrable Value": {
+            "content": ""
+        },
+        "Systems Need Domain-Specific Languages": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 12: Emergence": {
+        "content": "12\nEmergence\n\u00a0\n\n\nby Jeff Langr",
+        "Getting Clean via Emergent Design": {
+            "content": ""
+        },
+        "Simple Design Rule 1: Runs All the Tests": {
+            "content": ""
+        },
+        "Simple Design Rules 2\u20134: Refactoring": {
+            "content": ""
+        },
+        "No Duplication": {
+            "content": ""
+        },
+        "Expressive": {
+            "content": ""
+        },
+        "Minimal Classes and Methods": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 13: Concurrency": {
+        "content": "13\nConcurrency\n\u00a0\n\n\nby Brett L. Schuchert\n\u00a0\n\n\n\u00a0\n\n\n\u201cObjects are abstractions of processing. Threads are abstractions of schedule.\u201d\n\u00a0\n\n\n\u2014James O. Coplien\n1\n\u00a0\n\n\n1. Private correspondence.\n\n\nWriting clean concurrent programs is hard\u2014very hard. It is much easier to write code that executes in a single thread. It is also easy to write multithreaded code that looks fine on the surface but is broken at a deeper level. Such code works fine until the system is placed under stress.\n\n\nIn this chapter we discuss the need for concurrent programming, and the difficulties it presents. We then present several recommendations for dealing with those difficulties, and writing clean concurrent code. Finally, we conclude with issues related to testing concurrent code.\n\n\nClean Concurrency is a complex topic, worthy of a book by itself. Our strategy in \nthis\n book is to present an overview here and provide a more detailed tutorial in \u201cConcurrency II\u201d on page \n317\n. If you are just curious about concurrency, then this chapter will suffice for you now. If you have a need to understand concurrency at a deeper level, then you should read through the tutorial as well.",
+        "Why Concurrency?": {
+            "content": "",
+            "Myths and Misconceptions": {
+                "content": ""
+            }
+        },
+        "Challenges": {
+            "content": ""
+        },
+        "Concurrency Defense Principles": {
+            "content": "",
+            "Single Responsibility Principle": {
+                "content": ""
+            },
+            "Corollary: Limit the Scope of Data": {
+                "content": ""
+            },
+            "Corollary: Use Copies of Data": {
+                "content": ""
+            },
+            "Corollary: Threads Should Be as Independent as Possible": {
+                "content": ""
+            }
+        },
+        "Know Your Library": {
+            "content": "",
+            "Thread-Safe Collections": {
+                "content": ""
+            }
+        },
+        "Know Your Execution Models": {
+            "content": "",
+            "Producer-Consumer": {
+                "content": ""
+            },
+            "Readers-Writers": {
+                "content": ""
+            },
+            "Dining Philosophers": {
+                "content": ""
+            }
+        },
+        "Beware Dependencies Between Synchronized Methods": {
+            "content": ""
+        },
+        "Keep Synchronized Sections Small": {
+            "content": ""
+        },
+        "Writing Correct Shut-Down Code Is Hard": {
+            "content": ""
+        },
+        "Testing Threaded Code": {
+            "content": "",
+            "Treat Spurious Failures as Candidate Threading Issues": {
+                "content": ""
+            },
+            "Get Your Nonthreaded Code Working First": {
+                "content": ""
+            },
+            "Make Your Threaded Code Pluggable": {
+                "content": ""
+            },
+            "Make Your Threaded Code Tunable": {
+                "content": ""
+            },
+            "Run with More Threads Than Processors": {
+                "content": ""
+            },
+            "Run on Different Platforms": {
+                "content": ""
+            },
+            "Instrument Your Code to Try and Force Failures": {
+                "content": ""
+            },
+            "Hand-Coded": {
+                "content": ""
+            },
+            "Automated": {
+                "content": ""
+            }
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 14: Successive Refinement": {
+        "content": "14\nSuccessive Refinement\n\u00a0\n\n\nCase Study of a Command-Line Argument Parser\n\u00a0\n\n\n\u00a0\n\n\nThis chapter is a case study in successive refinement. You will see a module that started well but did not scale. Then you will see how the module was refactored and cleaned.\n\n\nMost of us have had to parse command-line arguments from time to time. If we don\u2019t have a convenient utility, then we simply walk the array of strings that is passed into the \nmain\n function. There are several good utilities available from various sources, \nbut none of them do exactly what I want. So, of course, I decided to write my own. I call it: \nArgs\n.\n\n\nArgs\n is very simple to use. You simply construct the \nArgs\n class with the input arguments and a format string, and then query the \nArgs\n instance for the values of the arguments. Consider the following simple example:\n\n\n\n\nListing 14-1 \nSimple use of Args\n\u00a0\n\n\n\u00a0\u00a0\u00a0public static void main(String[] args)\u00a0\u00a0\u00a0{\n\u00a0\u00a0\u00a0\u00a0\u00a0try {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0Args arg = new Args(\u201cl,p#,d*\u201d, args);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0boolean logging = arg.getBoolean(\u2019l\u2019);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0int port = arg.getInt(\u2019p\u2019);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0String directory = arg.getString(\u2019d\u2019);\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0executeApplication(logging, port, directory);\n\u00a0\u00a0\u00a0\u00a0\u00a0}\u00a0\u00a0catch (ArgsException e) {\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0System.out.printf(\u201cArgument error: %s\\n\u201d, e.errorMessage());\n\u00a0\u00a0\u00a0\u00a0\u00a0}\n\u00a0\u00a0\u00a0}\n\n\nYou can see how simple this is. We just create an instance of the \nArgs\n class with two parameters. The first parameter is the format, or \nschema,\n string: \n\u201cl,p#,d*.\u201d\n It defines three command-line arguments. The first, \n-l,\n is a boolean argument. The second, \n-p,\n is an integer argument. The third, \n-d,\n is a string argument. The second parameter to the \nArgs\n constructor is simply the array of command-line argument passed into \nmain\n.\n\n\nIf the constructor returns without throwing an \nArgsException,\n then the incoming command-line was parsed, and the \nArgs\n instance is ready to be queried. Methods like \ngetBoolean, getInteger,\n and \ngetString\n allow us to access the values of the arguments by their names.\n\n\nIf there is a problem, either in the format string or in the command-line arguments themselves, an \nArgsException\n will be thrown. A convenient description of what went wrong can be retrieved from the \nerrorMessage\n method of the exception.",
+        "Args Implementation": {
+            "content": "",
+            "How Did I Do This?": {
+                "content": ""
+            }
+        },
+        "Args: The Rough Draft": {
+            "content": "",
+            "So I Stopped": {
+                "content": ""
+            },
+            "On Incrementalism": {
+                "content": ""
+            }
+        },
+        "String Arguments": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        }
+    },
+    "Chapter 15: JUnit Internals": {
+        "content": "15\nJUnit Internals\n\u00a0\n\n\n\u00a0\n\n\nJUnit is one of the most famous of all Java frameworks. As frameworks go, it is simple in conception, precise in definition, and elegant in implementation. But what does the code look like? In this chapter we\u2019ll critique an example drawn from the JUnit framework.",
+        "The JUnit Framework": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        }
+    },
+    "Chapter 16: Refactoring SerialDate": {
+        "content": "16\nRefactoring \nSerialDate\n\u00a0\n\n\n\u00a0\n\n\nIf you go to \nhttp://www.jfree.org/jcommon/index.php\n, you will find the JCommon library. Deep within that library there is a package named \norg.jfree.date\n. Within that package there is a class named \nSerialDate\n. We are going to explore that class.\n\n\nThe author of \nSerialDate\n is David Gilbert. David is clearly an experienced and competent programmer. As we shall see, he shows a significant degree of professionalism and discipline within his code. For all intents and purposes, this is \u201cgood code.\u201d And I am going to rip it to pieces.\n\n\nThis is not an activity of malice. Nor do I think that I am so much better than David that I somehow have a right to pass judgment on his code. Indeed, if you were to find some of my code, I\u2019m sure you could find plenty of things to complain about.\n\n\nNo, this is not an activity of nastiness or arrogance. What I am about to do is nothing more and nothing less than a professional review. It is something that we should all be comfortable doing. And it is something we should welcome when it is done for us. It is only through critiques like these that we will learn. Doctors do it. Pilots do it. Lawyers do it. And we programmers need to learn how to do it too.\n\n\nOne more thing about David Gilbert: David is more than just a good programmer. David had the courage and good will to offer his code to the community at large for free. He placed it out in the open for all to see and invited public usage and public scrutiny. This was well done!\n\n\nSerialDate\n (\nListing B-1\n, page \n349\n) is a class that represents a date in Java. Why have a class that represents a date, when Java already has \njava.util.Date\n and \njava.util.Calendar\n, and others? The author wrote this class in response to a pain that I have often felt myself. The comment in his opening Javadoc (line 67) explains it well. We could quibble about his intention, but I have certainly had to deal with this issue, and I welcome a class that is about dates instead of times.",
+        "First, Make It Work": {
+            "content": ""
+        },
+        "Then Make It Right": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Chapter 17: Smells and Heuristics": {
+        "content": "17\nSmells and Heuristics\n\u00a0\n\n\n\u00a0\n\n\nIn his wonderful book \nRefactoring\n,\n1\n Martin Fowler identified many different \u201cCode Smells.\u201d The list that follows includes many of Martin\u2019s smells and adds many more of my own. It also includes other pearls and heuristics that I use to practice my trade.\n\n\n1. [\nRefactoring\n].\n\n\nI compiled this list by walking through several different programs and refactoring them. As I made each change, I asked myself \nwhy\n I made that change and then wrote the reason down here. The result is a rather long list of things that smell bad to me when I read code.\n\n\nThis list is meant to be read from top to bottom and also to be used as a reference. There is a cross-reference for each heuristic that shows you where it is referenced in the rest of the text in \u201cAppendix C\u201d on page \n409\n.",
+        "Comments": {
+            "content": "",
+            "C1: Inappropriate Information": {
+                "content": ""
+            },
+            "C2: Obsolete Comment": {
+                "content": ""
+            },
+            "C3: Redundant Comment": {
+                "content": ""
+            },
+            "C4: Poorly Written Comment": {
+                "content": ""
+            },
+            "C5: Commented-Out Code": {
+                "content": ""
+            }
+        },
+        "Environment": {
+            "content": "",
+            "E1: Build Requires More Than One Step": {
+                "content": ""
+            },
+            "E2: Tests Require More Than One Step": {
+                "content": ""
+            }
+        },
+        "Functions": {
+            "content": "",
+            "F1: Too Many Arguments": {
+                "content": ""
+            },
+            "F2: Output Arguments": {
+                "content": ""
+            },
+            "F3: Flag Arguments": {
+                "content": ""
+            },
+            "F4: Dead Function": {
+                "content": ""
+            }
+        },
+        "General": {
+            "content": "",
+            "G1: Multiple Languages in One Source File": {
+                "content": ""
+            },
+            "G2: Obvious Behavior Is Unimplemented": {
+                "content": ""
+            },
+            "G3: Incorrect Behavior at the Boundaries": {
+                "content": ""
+            },
+            "G4: Overridden Safeties": {
+                "content": ""
+            },
+            "G5: Duplication": {
+                "content": ""
+            },
+            "G6: Code at Wrong Level of Abstraction": {
+                "content": ""
+            },
+            "G7: Base Classes Depending on Their Derivatives": {
+                "content": ""
+            },
+            "G8: Too Much Information": {
+                "content": ""
+            },
+            "G9: Dead Code": {
+                "content": ""
+            },
+            "G10: Vertical Separation": {
+                "content": ""
+            },
+            "G11: Inconsistency": {
+                "content": ""
+            },
+            "G12: Clutter": {
+                "content": ""
+            },
+            "G13: Artificial Coupling": {
+                "content": ""
+            },
+            "G14: Feature Envy": {
+                "content": ""
+            },
+            "G15: Selector Arguments": {
+                "content": ""
+            },
+            "G16: Obscured Intent": {
+                "content": ""
+            },
+            "G17: Misplaced Responsibility": {
+                "content": ""
+            },
+            "G18: Inappropriate Static": {
+                "content": ""
+            },
+            "G19: Use Explanatory Variables": {
+                "content": ""
+            },
+            "G20: Function Names Should Say What They Do": {
+                "content": ""
+            },
+            "G21: Understand the Algorithm": {
+                "content": ""
+            },
+            "G22: Make Logical Dependencies Physical": {
+                "content": ""
+            },
+            "G23: Prefer Polymorphism to If/Else or Switch/Case": {
+                "content": ""
+            },
+            "G24: Follow Standard Conventions": {
+                "content": ""
+            },
+            "G25: Replace Magic Numbers with Named Constants": {
+                "content": ""
+            },
+            "G26: Be Precise": {
+                "content": ""
+            },
+            "G27: Structure over Convention": {
+                "content": ""
+            },
+            "G28: Encapsulate Conditionals": {
+                "content": ""
+            },
+            "G29: Avoid Negative Conditionals": {
+                "content": ""
+            },
+            "G30: Functions Should Do One Thing": {
+                "content": ""
+            },
+            "G31: Hidden Temporal Couplings": {
+                "content": ""
+            },
+            "G32: Don\u2019t Be Arbitrary": {
+                "content": ""
+            },
+            "G33: Encapsulate Boundary Conditions": {
+                "content": ""
+            },
+            "G34: Functions Should Descend Only One Level of Abstraction": {
+                "content": ""
+            },
+            "G35: Keep Configurable Data at High Levels": {
+                "content": ""
+            },
+            "G36: Avoid Transitive Navigation": {
+                "content": ""
+            }
+        },
+        "Java": {
+            "content": "",
+            "J1: Avoid Long Import Lists by Using Wildcards": {
+                "content": ""
+            },
+            "J2: Don\u2019t Inherit Constants": {
+                "content": ""
+            },
+            "J3: Constants versus Enums": {
+                "content": ""
+            }
+        },
+        "Names": {
+            "content": "",
+            "N1: Choose Descriptive Names": {
+                "content": ""
+            },
+            "N2: Choose Names at the Appropriate Level of Abstraction": {
+                "content": ""
+            },
+            "N3: Use Standard Nomenclature Where Possible": {
+                "content": ""
+            },
+            "N4: Unambiguous Names": {
+                "content": ""
+            },
+            "N5: Use Long Names for Long Scopes": {
+                "content": ""
+            },
+            "N6: Avoid Encodings": {
+                "content": ""
+            },
+            "N7: Names Should Describe Side-Effects.": {
+                "content": ""
+            }
+        },
+        "Tests": {
+            "content": "",
+            "T1: Insufficient Tests": {
+                "content": ""
+            },
+            "T2: Use a Coverage Tool!": {
+                "content": ""
+            },
+            "T3: Don\u2019t Skip Trivial Tests": {
+                "content": ""
+            },
+            "T4: An Ignored Test Is a Question about an Ambiguity": {
+                "content": ""
+            },
+            "T5: Test Boundary Conditions": {
+                "content": ""
+            },
+            "T6: Exhaustively Test Near Bugs": {
+                "content": ""
+            },
+            "T7: Patterns of Failure Are Revealing": {
+                "content": ""
+            },
+            "T8: Test Coverage Patterns Can Be Revealing": {
+                "content": ""
+            },
+            "T9: Tests Should Be Fast": {
+                "content": ""
+            }
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Bibliography": {
+            "content": ""
+        }
+    },
+    "Appendix A: Concurrency II": {
+        "content": "Appendix A\nConcurrency II\n\u00a0\n\n\nby Brett L. Schuchert\n\u00a0\n\n\nThis appendix supports and amplifies the \nConcurrency\n chapter on page \n177\n. It is written as a series of independent topics and you can generally read them in any order. There is some duplication between sections to allow for such reading.",
+        "Client/Server Example": {
+            "content": "",
+            "The Server": {
+                "content": ""
+            },
+            "Adding Threading": {
+                "content": ""
+            },
+            "Server Observations": {
+                "content": ""
+            },
+            "Conclusion": {
+                "content": ""
+            }
+        },
+        "Possible Paths of Execution": {
+            "content": "",
+            "Number of Paths": {
+                "content": ""
+            },
+            "Digging Deeper": {
+                "content": ""
+            },
+            "Conclusion": {
+                "content": ""
+            }
+        },
+        "Knowing Your Library": {
+            "content": "",
+            "Executor Framework": {
+                "content": ""
+            },
+            "Nonblocking Solutions": {
+                "content": ""
+            },
+            "Nonthread-Safe Classes": {
+                "content": ""
+            }
+        },
+        "Dependencies Between Methods Can Break Concurrent Code": {
+            "content": "",
+            "Tolerate the Failure": {
+                "content": ""
+            },
+            "Client-Based Locking": {
+                "content": ""
+            },
+            "Server-Based Locking": {
+                "content": ""
+            }
+        },
+        "Increasing Throughput": {
+            "content": "",
+            "Single-Thread Calculation of Throughput": {
+                "content": ""
+            },
+            "Multithread Calculation of Throughput": {
+                "content": ""
+            }
+        },
+        "Deadlock": {
+            "content": "",
+            "Mutual Exclusion": {
+                "content": ""
+            },
+            "Lock & Wait": {
+                "content": ""
+            },
+            "No Preemption": {
+                "content": ""
+            },
+            "Circular Wait": {
+                "content": ""
+            },
+            "Breaking Mutual Exclusion": {
+                "content": ""
+            },
+            "Breaking Lock & Wait": {
+                "content": ""
+            },
+            "Breaking Preemption": {
+                "content": ""
+            },
+            "Breaking Circular Wait": {
+                "content": ""
+            }
+        },
+        "Testing Multithreaded Code": {
+            "content": ""
+        },
+        "Tool Support for Testing Thread-Based Code": {
+            "content": ""
+        },
+        "Conclusion": {
+            "content": ""
+        },
+        "Tutorial: Full Code Examples": {
+            "content": "",
+            "Client/Server Nonthreaded": {
+                "content": ""
+            },
+            "Client/Server Using Threads": {
+                "content": ""
+            }
+        }
+    },
+    "Appendix B: org.jfree.date.SerialDate": {
+        "content": "Appendix B\norg.jfree.date.SerialDate\n\u00a0\n\n\n\n\nListing B-1\n\u00a0\n\n\nSerialDate.Java\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-2\n\u00a0\n\n\nSerialDateTest.java\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-3\n\u00a0\n\n\nMonthConstants.java\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-4\n\u00a0\n\n\nBobsSerialDateTest.java\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-5\n\u00a0\n\n\nSpreadsheetDate.java\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-6\n\u00a0\n\n\nRelativeDayOfWeekRule.java\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-7\n\u00a0\n\n\nDayDate.java (Final)\n\n\n\u00a0\n\n\n\u00a0\n\n\n\u00a0\n\n\n\n\nListing B-8\n\u00a0\n\n\nMonth.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-9\n\u00a0\n\n\nDay.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-10\n\u00a0\n\n\nDateInterval.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-11\n\u00a0\n\n\nWeekInMonth.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-12\n\u00a0\n\n\nWeekdayRange.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-13\n\u00a0\n\n\nDateUtil.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-14\n\u00a0\n\n\nDayDateFactory.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-15\n\u00a0\n\n\nSpreadsheetDateFactory.java (Final)\n\n\n\u00a0\n\n\n\n\nListing B-16\n\u00a0\n\n\nSpreadsheetDate.java (Final)"
+    },
+    "Appendix C: Cross References of Heuristics": {
+        "content": "Appendix C\nCross References of Heuristics\n\u00a0\n\n\nCross references of Smells and Heuristics. All other cross references can be deleted."
+    },
+    "Epilogue": {
+        "content": "Epilogue\n\u00a0\n\n\nIn 2005, while attending the Agile conference in Denver, Elisabeth Hedrickson\n1\n handed me a green wrist band similar to the kind that Lance Armstrong made so popular. This one said \u201cTest Obsessed\u201d on it. I gladly put it on and wore it proudly. Since learning TDD from Kent Beck in 1999, I have indeed become obsessed with test-driven development.\n\n\n1. \nhttp://www.qualitytree.com/\n\n\nBut then something strange happened. I found I could not take the band off. Not because it was physically stuck, but because it was \nmorally\n stuck. The band made an overt statement about my professional ethics. It was a visible indication of my committment to writing the best code I could write. Taking it off seemed like a betrayal of those ethics and of that committment.\n\n\nSo it is on my wrist still. When I write code, I see it there in my peripheral vision. It is a constant reminder of the promise I made to myself to write clean code."
+    },
+    "Index": {
+        "content": "Index\n\u00a0\n\n\n## detection, \n237\u2013238\n\n\n++ (pre- or post-increment) operator, \n325\n, \n326\n\n\nA\n\n\naborted computation, \n109\n\n\nabstract classes, \n149\n, \n271\n, \n290\n\n\nABSTRACT FACTORY pattern, \n38\n, \n156\n, \n273\n, \n274\n\n\nabstract interfaces, \n94\n\n\nabstract methods\n\n\nadding to \nArgumentMarshaler\n, \n234\u2013235\n\n\nmodifying, \n282\n\n\nabstract terms, \n95\n\n\nabstraction\n\n\nclasses depending on, \n150\n\n\ncode at wrong level of, \n290\u2013291\n\n\ndescending one level at a time, \n37\n\n\nfunctions descending only one level of, \n304\u2013306\n\n\nmixing levels of, \n36\u201337\n\n\nnames at the appropriate level of, \n311\n\n\nseparating levels of, \n305\n\n\nwrapping an implementation, \n11\n\n\nabstraction levels\n\n\nraising, \n290\n\n\nseparating, \n305\n\n\naccessor functions, Law of Demeter and, \n98\n\n\naccessors, naming, \n25\n\n\nActive Records, \n101\n\n\nadapted server, \n185\n\n\naffinity, \n84\n\n\nAgile Software Development: Principles, Patterns, Practices (PPP)\n, \n15\n\n\nalgorithms\n\n\ncorrecting, \n269\u2013270\n\n\nrepeating, \n48\n\n\nunderstanding, \n297\u2013298\n\n\nambiguities\n\n\nin code, \n301\n\n\nignored tests as, \n313\n\n\namplification comments, \n59\n\n\nanalysis functions, \n265\n\n\n\u201cannotation form\u201d, of AspectJ, \n166\n\n\nAnt project, \n76\n, \n77\n\n\nAOP (aspect-oriented programming), \n160\n, \n163\n\n\nAPIs. \nSee also\n\n\npublic APIs\n\n\ncalling a \nnull\n-returning method from, \n110\n\n\nspecialized for tests, \n127\n\n\nwrapping third-party, \n108\n\n\napplications\n\n\ndecoupled from Spring, \n164\n\n\ndecoupling from construction details, \n156\n\n\ninfrastructure of, \n163\n\n\nkeeping concurrency-related code separate, \n181\n\n\narbitrary structure, \n303\u2013304\n\n\nargs\n array, converting into a \nlist\n, \n231\u2013232\n\n\nArgs\n class\n\n\nconstructing, \n194\n\n\nimplementation of, \n194\u2013200\n\n\nrough drafts of, \n201\u2013212\n, \n226\u2013231\n\n\nArgsException\n class\n\n\nlisting, \n198\u2013200\n\n\nmerging exceptions into, \n239\u2013242\n\n\nargument(s)\n\n\nflag, \n41\n\n\nfor a function, \n40\n\n\nin functions, \n288\n\n\nmonadic forms of, \n41\n\n\nreducing, \n43\n\n\nargument lists, \n43\n\n\nargument objects, \n43\n\n\nargument types\n\n\nadding, \n200\n, \n237\n\n\nnegative impact of, \n208\n\n\nArgumentMarshaler\n class\n\n\nadding the skeleton of, \n213\u2013214\n\n\nbirth of, \n212\n\n\nArgumentMarshaler\n interface, \n197\u2013198\n\n\narrays, moving, \n279\n\n\nart, of clean code, \n6\u20137\n\n\nartificial coupling, \n293\n\n\nAspectJ language, \n166\n\n\naspect-oriented programming (AOP), \n160\n, \n163\n\n\naspects\n\n\nin AOP, \n160\u2013161\n\n\n\u201cfirst-class\u201d support for, \n166\n\n\nassert statements, \n130\u2013131\n\n\nassertEquals\n, \n42\n\n\nassertions, using a set of, \n111\n\n\nassignments, unaligned, \n87\u201388\n\n\natomic operation, \n323\u2013324\n\n\nattributes, \n68\n\n\nauthors of JUnit, \n252\n\n\nprogrammers as, \n13\u201314\n\n\nauthorship statements, \n55\n\n\nautomated code instrumentation, \n189\u2013190\n\n\nautomated suite, of unit tests, \n124\n\n\nB\n\n\nbad code, \n3\u20134\n. \nSee also\n\n\ndirty code\n; \nmessy code\n\n\ndegrading effect of, \n250\n\n\nexample, \n71\u201372\n\n\nexperience of cleaning, \n250\n\n\nnot making up for, \n55\n\n\nbad comments, \n59\u201374\n\n\nbanner, gathering functions beneath, \n67\n\n\nbase classes, \n290\n, \n291\n\n\nBDUF (Big Design Up Front), \n167\n\n\nbeans, private variables manipulated, \n100\u2013101\n\n\nBeck, Kent, \n3\n, \n34\n, \n71\n, \n171\n, \n252\n, \n289\n, \n296\n\n\nbehaviors, \n288\u2013289\n\n\nBig Design Up Front (BDUF), \n167\n\n\nblank lines, in code, \n78\u201379\n\n\nblocks, calling functions within, \n35\n\n\nBooch,Grady, \n8\u20139\n\n\nboolean, passing into a function, \n41\n\n\nboolean arguments, \n194\n, \n288\n\n\nboolean\n map, deleting, \n224\n\n\nboolean output, of tests, \n132\n\n\nbound resources, \n183\n, \n184\n\n\nboundaries\n\n\nclean, \n120\n\n\nexploring and learning, \n116\n\n\nincorrect behavior at, \n289\n\n\nseparating known from unknown, \n118\u2013119\n\n\nboundary condition errors, \n269\n\n\nboundary conditions\n\n\nencapsulating, \n304\n\n\ntesting, \n314\n\n\nboundary tests, easing a migration, \n118\n \u201cBowling Game\u201d, \n312\n\n\nBoy Scout Rule, \n14\u201315\n, \n257\n\n\nfollowing, \n284\n\n\nsatisfying, \n265\n\n\nbroken windows metaphor, \n8\n\n\nbucket brigade, \n303\n\n\nBUILD-OPERATE-CHECK pattern, \n127\n\n\nbuilds, \n287\n\n\nbusiness logic, separating from error handling, \n109\n\n\nbylines, \n68\n\n\nbyte-manipulation libraries, \n161\n, \n162\u2013163\n\n\nC\n\n\nThe C++ Programming Language\n, \n7\n\n\ncalculations, breaking into intermediate values, \n296\n\n\ncall stack, \n324\n\n\nCallable\n interface, \n326\n\n\ncaller, cluttering, \n104\n\n\ncalling hierarchy, \n106\n\n\ncalls, avoiding chains of, \n98\n\n\ncaring, for code, \n10\n\n\nCartesian points, \n42\n\n\nCAS operation, as atomic, \n328\n\n\nchange(s)\n\n\nisolating from, \n149\u2013150\n\n\nlarge number of very tiny, \n213\n\n\norganizing for, \n147\u2013150\n\n\ntests enabling, \n124\n\n\nchange history, deleting, \n270\n\n\ncheck exceptions, in Java, \n106\n\n\ncircular wait, \n337\n, \n338\u2013339\n\n\nclarification, comments as, \n57\n\n\nclarity, \n25\n, \n26\n\n\nclass names, \n25\n\n\nclasses\n\n\ncohesion of, \n140\u2013141\n\n\ncreating for bigger concepts, \n28\u201329\n\n\ndeclaring instance variables, \n81\n\n\nenforcing design and business rules, \n115\n\n\nexposing internals of, \n294\n\n\ninstrumenting into ConTest, \n342\n\n\nkeeping small, \n136\n, \n175\n\n\nminimizing the number of, \n176\n\n\nnaming, \n25\n, \n138\n\n\nnonthread-safe, \n328\u2013329\n\n\nas nouns of a language, \n49\n\n\norganization of, \n136\n\n\norganizing to reduce risk of change, \n147\n\n\nsupporting advanced concurrency design, \n183\n\n\nclassification, of errors, \n107\n\n\nclean boundaries, \n120\n\n\nclean code\n\n\nart of, \n6\u20137\n\n\ndescribed, \n7\u201312\n\n\nwriting, \n6\u20137\n\n\nclean tests, \n124\u2013127\n\n\ncleanliness\n\n\nacquired sense of, \n6\u20137\n\n\ntied to tests, \n9\n\n\ncleanup, of code, \n14\u201315\n\n\nclever names, \n26\n\n\nclient, using two methods, \n330\n\n\nclient code, connecting to a server, \n318\n\n\nclient-based locking, \n185\n, \n329\n, \n330\u2013332\n\n\nclientScheduler\n, \n320\n\n\nclient/server application, concurrency in, \n317\u2013321\n\n\nClient/Server nonthreaded, code for, \n343\u2013346\n\n\nclient-server using threads, code changes, \n346\u2013347\n\n\nClientTest.java\n, \n318\n, \n344\u2013346\n\n\nclosing braces, comments on, \n67\u201368\n\n\nClover, \n268\n, \n269\n\n\nclutter\n\n\nJavadocs as, \n276\n\n\nkeeping free of, \n293\n\n\ncode, \n2\n\n\nbad, \n3\u20134\n\n\nBeck\u2019s rules of, \n10\n\n\ncommented-out, \n68\u201369\n, \n287\n\n\ndead, \n292\n\n\nexplaining yourself in, \n55\n\n\nexpressing yourself in, \n54\n\n\nformatting of, \n76\n\n\nimplicity of, \n18\u201319\n\n\ninstrumenting, \n188\n, \n342\n\n\njiggling, \n190\n\n\nmaking readable, \n311\n\n\nnecessity of, \n2\n\n\nreading from top to bottom, \n37\n\n\nsimplicity of, \n18\n, \n19\n\n\ntechnique for shrouding, \n20\n\n\nthird-party, \n114\u2013115\n\n\nwidth of lines in, \n85\u201390\n\n\nat wrong level of abstraction, \n290\u2013291\n\n\ncode bases, dominated by error handling, \n103\n\n\ncode changes, comments not always following, \n54\n\n\ncode completion, automatic, \n20\n\n\ncode coverage analysis, \n254\u2013256\n\n\ncode instrumentation, \n188\u2013190\n \u201ccode sense\u201d, \n6\n, \n7\n\n\ncode smells, listing of, \n285\u2013314\n\n\ncoding standard, \n299\n\n\ncohesion\n\n\nof classes, \n140\u2013141\n\n\nmaintaining, \n141\u2013146\n\n\ncommand line arguments, \n193\u2013194\n\n\ncommands, separating from queries, \n45\u201346\n\n\ncomment header standard, \n55\u201356\n\n\ncomment headers, replacing, \n70\n\n\ncommented-out code, \n68\u201369\n, \n287\n\n\ncommenting style, example of bad, \n71\u201372\n\n\ncomments\n\n\namplifying importance of something, \n59\n\n\nbad, \n59\u201374\n\n\ndeleting, \n282\n\n\nas failures, \n54\n\n\ngood, \n55\u201359\n\n\nheuristics on, \n286\u2013287\n\n\nHTML, \n69\n\n\ninaccurate, \n54\n\n\ninformative, \n56\n\n\njournal, \n63\u201364\n\n\nlegal, \n55\u201356\n\n\nmandated, \n63\n\n\nmisleading, \n63\n\n\nmumbling, \n59\u201360\n\n\nas a necessary evil, \n53\u201359\n\n\nnoise, \n64\u201366\n\n\nnot making up for bad code, \n55\n\n\nobsolete, \n286\n\n\npoorly written, \n287\n\n\nproper use of, \n54\n\n\nredundant, \n60\u201362\n, \n272\n, \n275\n, \n286\u2013287\n\n\nrestating the obvious, \n64\n\n\nseparated from code, \n54\n\n\nTODO\n, \n58\u201359\n\n\ntoo much information in, \n70\n\n\nventing in, \n65\n\n\nwriting, \n287\n\n\n\u201ccommunication gap\u201d, minimizing, \n168\n\n\nCompare and Swap (CAS) operation, \n327\u2013328\n\n\nComparisonCompactor\n module, \n252\u2013265\n\n\ndefactored, \n256\u2013261\n\n\nfinal, \n263\u2013265\n\n\ninterim, \n261\u2013263\n\n\noriginal code, \n254\u2013256\n\n\ncompiler warnings, turning off, \n289\n\n\ncomplex code, demonstrating failures in, \n341\n\n\ncomplexity, managing, \n139\u2013140\n\n\ncomputer science (CS) terms, using for names, \n27\n\n\nconcepts\n\n\nkeeping close to each other, \n80\n\n\nnaming, \n19\n\n\none word per, \n26\n\n\nseparating at different levels, \n290\n\n\nspelling similar similarly, \n20\n\n\nvertical openness between, \n78\u201379\n\n\nconceptual affinity, of code, \n84\n\n\nconcerns\n\n\ncross-cutting, \n160\u2013161\n\n\nseparating, \n154\n, \n166\n, \n178\n, \n250\n\n\nconcrete classes, \n149\n\n\nconcrete details, \n149\n\n\nconcrete terms, \n94\n\n\nconcurrency\n\n\ndefense principles, \n180\u2013182\n\n\nissues, \n190\n\n\nmotives for adopting, \n178\u2013179\n\n\nmyths and misconceptions about, \n179\u2013180\n\n\nconcurrency code\n\n\ncompared to nonconcurrency-related code, \n181\n\n\nfocusing, \n321\n\n\nconcurrent algorithms, \n179\n\n\nconcurrent applications, partition behavior, \n183\n\n\nconcurrent code\n\n\nbreaking, \n329\u2013333\n\n\ndefending from problems of, \n180\n\n\nflaws hiding in, \n188\n\n\nconcurrent programming, \n180\n\n\nConcurrent Programming in Java: Design Principles and Patterns\n, \n182\n, \n342\n\n\nconcurrent programs, \n178\n\n\nconcurrent update problems, \n341\n\n\nConcurrentHashMap\n implementation, \n183\n\n\nconditionals\n\n\navoiding negative, \n302\n\n\nencapsulating, \n257\u2013258\n, \n301\n\n\nconfigurable data, \n306\n\n\nconfiguration constants, \n306\n\n\nconsequences, warning of, \n58\n\n\nconsistency\n\n\nin code, \n292\n\n\nof enums, \n278\n\n\nin names, \n40\n\n\nconsistent conventions, \n259\n\n\nconstants\n\n\nversus \nenums\n, \n308\u2013309\n\n\nhiding, \n308\n\n\ninheriting, \n271\n, \n307\u2013308\n\n\nkeeping at the appropriate level, \n83\n\n\nleaving as raw numbers, \n300\n\n\nnot inheriting, \n307\u2013308\n\n\npassing as symbols, \n276\n\n\nturning into enums, \n275\u2013276\n\n\nconstruction\n\n\nmoving all to \nmain\n, \n155\n, \n156\n\n\nseparating with factory, \n156\n\n\nof a system, \n154\n\n\nconstructor arguments, \n157\n\n\nconstructors, overloading, \n25\n\n\nconsumer threads, \n184\n\n\nConTest tool, \n190\n, \n342\n\n\ncontext\n\n\nadding meaningful, \n27\u201329\n\n\nnot adding gratuitous, \n29\u201330\n\n\nproviding with exceptions, \n107\n\n\ncontinuous readers, \n184\n\n\ncontrol variables, within loop statements, \n80\u201381\n\n\nconvenient idioms, \n155\n\n\nconvention(s)\n\n\nfollowing standard, \n299\u2013300\n\n\nover configuration, \n164\n\n\nstructure over, \n301\n\n\nusing consistent, \n259\n\n\nconvoluted code, \n175\n\n\ncopyright statements, \n55\n\n\ncosmic-rays. \nSee\n\n\none-offs\n\n\nCountDownLatch\n class, \n183\n\n\ncoupling. \nSee also\n\n\ndecoupling\n; \ntemporal coupling\n; \ntight coupling\n\n\nartificial, \n293\n\n\nhidden temporal, \n302\u2013303\n\n\nlack of, \n150\n\n\ncoverage patterns, testing, \n314\n\n\ncoverage tools, \n313\n \u201ccrisp abstraction\u201d, \n8\u20139\n\n\ncross-cutting concerns, \n160\n\n\nCunningham, Ward, \n11\u201312\n\n\ncuteness, in code, \n26\n\n\nD\n\n\ndangling \nfalse\n argument, \n294\n\n\ndata\n\n\nabstraction, \n93\u201395\n\n\ncopies of, \n181\u2013182\n\n\nencapsulation, \n181\n\n\nlimiting the scope of, \n181\n\n\nsets processed in parallel, \n179\n\n\ntypes, \n97\n, \n101\n\n\ndata structures. \nSee also\n\n\nstructure(s)\n\n\ncompared to objects, \n95\n, \n97\n\n\ndefined, \n95\n\n\ninterfaces representing, \n94\n\n\ntreating Active Records as, \n101\n\n\ndata transfer-objects (DTOs), \n100\u2013101\n, \n160\n\n\ndatabase normal forms, \n48\n\n\nDateInterval\n enum, \n282\u2013283\n\n\nDAY\n enumeration, \n277\n\n\nDayDate\n class, running \nSerialDate\n as, \n271\n\n\nDayDateFactory\n, \n273\u2013274\n\n\ndead code, \n288\n, \n292\n\n\ndead functions, \n288\n\n\ndeadlock, \n183\n, \n335\u2013339\n\n\ndeadly embrace. \nSee\n\n\ncircular wait\n\n\ndebugging, finding deadlocks, \n336\n\n\ndecision making, optimizing, \n167\u2013168\n\n\ndecisions, postponing, \n168\n\n\ndeclarations, unaligned, \n87\u201388\n\n\nDECORATOR objects, \n164\n\n\nDECORATOR pattern, \n274\n\n\ndecoupled architecture, \n167\n\n\ndecoupling, from construction details, \n156\n\n\ndecoupling strategy, concurrency as, \n178\n\n\ndefault constructor, deleting, \n276\n\n\ndegradation, preventing, \n14\n\n\ndeletions, as the majority of changes, \n250\n\n\ndensity, vertical in code, \n79\u201380\n\n\ndependencies\n\n\nfinding and breaking, \n250\n\n\ninjecting, \n157\n\n\nlogical, \n282\n\n\nmaking logical physical, \n298\u2013299\n\n\nbetween methods, \n329\u2013333\n\n\nbetween synchronized methods, \n185\n\n\nDependency Injection (DI), \n157\n\n\nDependency Inversion Principle (DIP), \n15\n, \n150\n\n\ndependency magnet, \n47\n\n\ndependent functions, formatting, \n82\u201383\n\n\nderivatives\n\n\nbase classes depending on, \n291\n\n\nbase classes knowing about, \n273\n\n\nof the exception class, \n48\n\n\nmoving \nset\n functions into, \n232\n, \n233\u2013235\n\n\npushing functionality into, \n217\n\n\ndescription\n\n\nof a class, \n138\n\n\noverloading the structure of code into, \n310\n\n\ndescriptive names\n\n\nchoosing, \n309\u2013310\n\n\nusing, \n39\u201340\n\n\ndesign(s)\n\n\nof concurrent algorithms, \n179\n\n\nminimally coupled, \n167\n\n\nprinciples of, \n15\n\n\ndesign patterns, \n290\n\n\ndetails, paying attention to, \n8\n\n\nDI (Dependency Injection), \n157\n\n\nDijkstra, Edsger, \n48\n\n\ndining philosophers execution model, \n184\u2013185\n\n\nDIP (Dependency Inversion Principle), \n15\n, \n150\n\n\ndirty code. \nSee also\n\n\nbad code\n; \nmessy code\n\n\ndirty code, cleaning, \n200\n\n\ndirty tests, \n123\n\n\ndisinformation, avoiding, \n19\u201320\n\n\ndistance, vertical in code, \n80\u201384\n\n\ndistinctions, making meaningful, \n20\u201321\n\n\ndomain-specific languages (DSLs), \n168\u2013169\n\n\ndomain-specific testing language, \n127\n\n\nDoubleArgumentMarshaler\n class, \n238\n\n\nDRY principle (Don\u2019t Repeat Yourself), \n181\n, \n289\n\n\nDTOs (data transfer objects), \n100\u2013101\n, \n160\n\n\ndummy scopes, \n90\n\n\nduplicate \nif\n statements, \n276\n\n\nduplication\n\n\nof code, \n48\n\n\nin code, \n289\u2013290\n\n\neliminating, \n173\u2013175\n\n\nfocusing on, \n10\n\n\nforms of, \n173\n, \n290\n\n\nreduction of, \n48\n\n\nstrategies for eliminating, \n48\n\n\ndyadic argument, \n40\n\n\ndyadic functions, \n42\n\n\ndynamic proxies, \n161\n\n\nE\n\n\ne\n, as a variable name, \n22\n\n\nEclipse, \n26\n\n\nedit sessions, playing back, \n13\u201314\n\n\nefficiency, of code, \n7\n\n\nEJB architecture, early as over-engineered, \n167\n\n\nEJB standard, complete overhaul of, \n164\n\n\nEJB2 beans, \n160\n\n\nEJB3, Bank object rewritten in, \n165\u2013166\n\n\n\u201celegant\u201d code, \n7\n\n\nemergent design, \n171\u2013176\n\n\nencapsulation, \n136\n\n\nof boundary conditions, \n304\n\n\nbreaking, \n106\u2013107\n\n\nof conditionals, \n301\n\n\nencodings, avoiding, \n23\u201324\n, \n312\u2013313\n\n\nentity bean, \n158\u2013160\n\n\nenum\n(s)\n\n\nchanging \nMonthConstants\n to, \n272\n\n\nusing, \n308\u2013309\n\n\nenumeration, moving, \n277\n\n\nenvironment, heuristics on, \n287\n\n\nenvironment control system, \n128\u2013129\n\n\nenvying, the scope of a class, \n293\n\n\nerror check, hiding a side effect, \n258\n\n\nError\n class, \n47\u201348\n\n\nerror code constants, \n198\u2013200\n\n\nerror codes\n\n\nimplying a class or enum, \n47\u201348\n\n\npreferring exceptions to, \n46\n\n\nreturning, \n103\u2013104\n\n\nreusing old, \n48\n\n\nseparating from the \nArgs\n module, \n242\u2013250\n\n\nerror detection, pushing to the edges, \n109\n\n\nerror flags, \n103\u2013104\n\n\nerror handling, \n8\n, \n47\u201348\n\n\nerror messages, \n107\n, \n250\n\n\nerror processing, testing, \n238\u2013239\n\n\nerrorMessage\n method, \n250\n\n\nerrors. \nSee also\n\n\nboundary condition errors\n; \nspelling errors\n; \nstring comparison errors classifying\n, \n107\n\n\nEvans, Eric, \n311\n\n\nevents, \n41\n\n\nexception classification, \n107\n\n\nexception clauses, \n107\u2013108\n\n\nexception management code, \n223\n\n\nexceptions\n\n\ninstead of return codes, \n103\u2013105\n\n\nnarrowing the type of, \n105\u2013106\n\n\npreferring to error codes, \n46\n\n\nproviding context with, \n107\n\n\nseparating from \nArgs\n, \n242\u2013250\n\n\nthrowing, \n104\u2013105\n, \n194\n\n\nunchecked, \n106\u2013107\n\n\nexecution, possible paths of, \n321\u2013326\n\n\nexecution models, \n183\u2013185\n\n\nExecutor\n framework, \n326\u2013327\n\n\nExecutorClientScheduler.java\n, \n321\n\n\nexplanation, of intent, \n56\u201357\n\n\nexplanatory variables, \n296\u2013297\n\n\nexplicitness, of code, \n19\n\n\nexpressive code, \n295\n\n\nexpressiveness\n\n\nin code, \n10\u201311\n\n\nensuring, \n175\u2013176\n\n\nExtract Method refactoring, \n11\n\n\nExtreme Programming Adventures in C#\n, \n10\n\n\nExtreme Programming Installed\n, \n10\n\n\n\u201ceye-full\u201d, code fitting into, \n79\u201380\n\n\nF\n\n\nfactories, \n155\u2013156\n\n\nfactory classes, \n273\u2013275\n\n\nfailure\n\n\nto express ourselves in code, \n54\n\n\npatterns of, \n314\n\n\ntolerating with no harm, \n330\n\n\nfalse\n argument, \n294\n\n\nfast tests, \n132\n\n\nfast-running threads, starving longer running, \n183\n\n\nfear, of renaming, \n30\n\n\nFeathers, Michael, \n10\n\n\nfeature envy\n\n\neliminating, \n293\u2013294\n\n\nsmelling of, \n278\n\n\nfile size, in Java, \n76\n\n\nfinal\n keywords, \n276\n\n\nF.I.R.S.T. acronym, \n132\u2013133\n\n\nFirst Law, of TDD, \n122\n\n\nFitNesse project\n\n\ncoding style for, \n90\n\n\nfile sizes, \n76\n, \n77\n\n\nfunction in, \n32\u201333\n\n\ninvoking all tests, \n224\n\n\nflag arguments, \n41\n, \n288\n\n\nfocussed code, \n8\n\n\nforeign code. \nSee\n\n\nthird-party code\n\n\nformatting\n\n\nhorizontal, \n85\u201390\n\n\npurpose of, \n76\n\n\nUncle Bob\u2019s rules, \n90\u201392\n\n\nvertical, \n76\u201385\n\n\nformatting style, for a team of developers, \n90\n\n\nFortran, forcing encodings, \n23\n\n\nFowler, Martin, \n285\n, \n293\n\n\nframe, \n324\n\n\nfunction arguments, \n40\u201345\n\n\nfunction call dependencies, \n84\u201385\n\n\nfunction headers, \n70\n\n\nfunction signature, \n45\n\n\nfunctionality, placement of, \n295\u2013296\n\n\nfunctions\n\n\nbreaking into smaller, \n141\u2013146\n\n\ncalling within a block, \n35\n\n\ndead, \n288\n\n\ndefining private, \n292\n\n\ndescending one level of abstraction, \n304\u2013306\n\n\ndoing one thing, \n35\u201336\n, \n302\n\n\ndyadic, \n42\n\n\neliminating extraneous \nif\n statements, \n262\n\n\nestablishing the temporal nature of, \n260\n\n\nformatting dependent, \n82\u201383\n\n\ngathering beneath a banner, \n67\n\n\nheuristics on, \n288\n\n\nintention-revealing, \n19\n\n\nkeeping small, \n175\n\n\nlength of, \n34\u201335\n\n\nmoving, \n279\n\n\nnaming, \n39\n, \n297\n\n\nnumber of arguments in, \n288\n\n\none level of abstraction per, \n36\u201337\n\n\nin place of comments, \n67\n\n\nrenaming for clarity, \n258\n\n\nrewriting for clarity, \n258\u2013259\n\n\nsections within, \n36\n\n\nsmall as better, \n34\n\n\nstructured programming with, \n49\n\n\nunderstanding, \n297\u2013298\n\n\nas verbs of a language, \n49\n\n\nwriting, \n49\n\n\nfutures, \n326\n\n\nG\n\n\nGamma, Eric, \n252\n\n\ngeneral heuristics, \n288\u2013307\n\n\ngenerated byte-code, \n180\n\n\ngenerics, improving code readability, \n115\n\n\nget\n functions, \n218\n\n\ngetBoolean\n function, \n224\n\n\nGETFIELD\n instruction, \n325\n, \n326\n\n\ngetNextId\n method, \n326\n\n\ngetState\n function, \n129\n\n\nGilbert, David, \n267\n, \n268\n\n\ngiven-when-then convention, \n130\n\n\nglitches. \nSee\n\n\none-offs\n\n\nglobal setup strategy, \n155\n\n\n\u201cGod class\u201d, \n136\u2013137\n\n\ngood comments, \n55\u201359\n\n\ngoto\n statements, avoiding, \n48\n, \n49\n\n\ngrand redesign, \n5\n\n\ngratuitous context, \n29\u201330\n\n\nH\n\n\nhand-coded instrumentation, \n189\n\n\nHashTable\n, \n328\u2013329\n\n\nheaders. \nSee\n\n\ncomment headers\n; \nfunction headers\n\n\nheuristics\n\n\ncross references of, \n286\n, \n409\n\n\ngeneral, \n288\u2013307\n\n\nlisting of, \n285\u2013314\n\n\nhidden temporal coupling, \n259\n, \n302\u2013303\n\n\nhidden things, in a function, \n44\n\n\nhiding\n\n\nimplementation, \n94\n\n\nstructures, \n99\n\n\nhierarchy of scopes, \n88\n\n\nHN. \nSee\n\n\nHungarian Notation\n\n\nhorizontal alignment, of code, \n87\u201388\n\n\nhorizontal formatting, \n85\u201390\n\n\nhorizontal white space, \n86\n\n\nHTML, in source code, \n69\n\n\nHungarian Notation (HN), \n23\u201324\n, \n295\n\n\nHunt, Andy, \n8\n, \n289\n\n\nhybrid structures, \n99\n\n\nI\n\n\nif\n statements\n\n\nduplicate, \n276\n\n\neliminating, \n262\n\n\nif-else\n chain\n\n\nappearing again and again, \n290\n\n\neliminating, \n233\n\n\nignored tests, \n313\n\n\nimplementation\n\n\nduplication of, \n173\n\n\nencoding, \n24\n\n\nexposing, \n94\n\n\nhiding, \n94\n\n\nwrapping an abstraction, \n11\n\n\nImplementation Patterns\n, \n3\n, \n296\n\n\nimplicity, of code, \n18\n\n\nimport lists\n\n\navoiding long, \n307\n\n\nshortening in \nSerialDate\n, \n270\n\n\nimports, as hard dependencies, \n307\n\n\nimprecision, in code, \n301\n\n\ninaccurate comments, \n54\n\n\ninappropriate information, in comments, \n286\n\n\ninappropriate static methods, \n296\n\n\ninclude\n method, \n48\n\n\ninconsistency, in code, \n292\n\n\ninconsistent spellings, \n20\n\n\nincrementalism, \n212\u2013214\n\n\nindent level, of a function, \n35\n\n\nindentation, of code, \n88\u201389\n\n\nindentation rules, \n89\n\n\nindependent tests, \n132\n\n\ninformation\n\n\ninappropriate, \n286\n\n\ntoo much, \n70\n, \n291\u2013292\n\n\ninformative comments, \n56\n\n\ninheritance hierarchy, \n308\n\n\ninobvious connection, between a comment and code, \n70\n\n\ninput arguments, \n41\n\n\ninstance variables\n\n\nin classes, \n140\n\n\ndeclaring, \n81\n\n\nhiding the declaration of, \n81\u201382\n\n\npassing as function arguments, \n231\n\n\nproliferation of, \n140\n\n\ninstrumented classes, \n342\n\n\ninsufficient tests, \n313\n\n\ninteger argument(s)\n\n\ndefining, \n194\n\n\nintegrating, \n224\u2013225\n\n\ninteger\n argument functionality, moving into \nArgumentMarshaler\n, \n215\u2013216\n\n\ninteger argument type, adding to \nArgs\n, \n212\n\n\nintegers, pattern of changes for, \n220\n\n\nIntelliJ, \n26\n\n\nintent\n\n\nexplaining in code, \n55\n\n\nexplanation of, \n56\u201357\n\n\nobscured, \n295\n\n\nintention-revealing function, \n19\n\n\nintention-revealing names, \n18\u201319\n\n\ninterface(s)\n\n\ndefining local or remote, \n158\u2013160\n\n\nencoding, \n24\n\n\nimplementing, \n149\u2013150\n\n\nrepresenting abstract concerns, \n150\n\n\nturning \nArgumentMarshaler\n into, \n237\n\n\nwell-defined, \n291\u2013292\n\n\nwriting, \n119\n\n\ninternal structures, objects hiding, \n97\n\n\nintersection, of domains, \n160\n\n\nintuition, not relying on, \n289\n\n\ninventor of C++, \n7\n\n\nInversion of Control (IoC), \n157\n\n\nInvocationHandler\n object, \n162\n\n\nI/O bound, \n318\n\n\nisolating, from change, \n149\u2013150\n\n\nisxxxArg\n methods, \n221\u2013222\n\n\niterative process, refactoring as, \n265\n\n\nJ\n\n\njar files, deploying derivatives and bases in, \n291\n\n\nJava\n\n\naspects or aspect-like mechanisms, \n161\u2013166\n\n\nheuristics on, \n307\u2013309\n\n\nas a wordy language, \n200\n\n\nJava \n5\n, improvements for concurrent development, \n182\u2013183\n\n\nJava \n5\n Executor framework, \n320\u2013321\n\n\nJava \n5\n VM, nonblocking solutions in, \n327\u2013328\n\n\nJava AOP frameworks, \n163\u2013166\n\n\nJava programmers, encoding not needed, \n24\n\n\nJava proxies, \n161\u2013163\n\n\nJava source files, \n76\u201377\n\n\njavadocs\n\n\nas clutter, \n276\n\n\nin nonpublic code, \n71\n\n\npreserving formatting in, \n270\n\n\nin public APIs, \n59\n\n\nrequiring for every function, \n63\n\n\njava.util.concurrent\n package, collections in, \n182\u2013183\n\n\nJBoss AOP, proxies in, \n163\n\n\nJCommon library, \n267\n\n\nJCommon\n unit tests, \n270\n\n\nJDepend project, \n76\n, \n77\n\n\nJDK proxy, providing persistence support, \n161\u2013163\n\n\nJeffries, Ron, \n10\u201311\n, \n289\n\n\njiggling strategies, \n190\n\n\nJNDI lookups, \n157\n\n\njournal comments, \n63\u201364\n\n\nJUnit\n, \n34\n\n\nJUnit framework, \n252\u2013265\n\n\nJunit project, \n76\n, \n77\n\n\nJust-In-Time Compiler, \n180\n\n\nK\n\n\nkeyword form, of a function name, \n43\n\n\nL\n\n\nL\n, lower-case in variable names, \n20\n\n\nlanguage design, art of programming as, \n49\n\n\nlanguages\n\n\nappearing to be simple, \n12\n\n\nlevel of abstraction, \n2\n\n\nmultiple in one source file, \n288\n\n\nmultiples in a comment, \n270\n\n\nlast-in, first-out (LIFO) data structure, operand stack as, \n324\n\n\nLaw of Demeter, \n97\u201398\n, \n306\n\n\nLAZY INITIALIZATION/EVALUATION idiom, \n154\n\n\nLAZY-INITIALIZATION, \n157\n\n\nLea, Doug, \n182\n, \n342\n\n\nlearning tests, \n116\n, \n118\n\n\nLeBlanc\u2019s law, \n4\n\n\nlegacy code, \n307\n\n\nlegal comments, \n55\u201356\n\n\nlevel of abstraction, \n36\u201337\n\n\nlevels of detail, \n99\n\n\nlexicon, having a consistent, \n26\n\n\nlines of code\n\n\nduplicating, \n173\n\n\nwidth of, \n85\n\n\nlist(s)\n\n\nof arguments, \n43\n\n\nmeaning specific to programmers, \n19\n\n\nreturning a predefined immutable, \n110\n\n\nliterate code, \n9\n\n\nliterate programming, \n9\n\n\nLiterate Programming\n, \n141\n\n\nlivelock, \n183\n, \n338\n\n\nlocal comments, \n69\u201370\n\n\nlocal variables, \n324\n\n\ndeclaring, \n292\n\n\nat the top of each function, \n80\n\n\nlock & wait, \n337\n, \n338\n\n\nlocks, introducing, \n185\n\n\nlog4j\n package, \n116\u2013118\n\n\nlogical dependencies, \n282\n, \n298\u2013299\n\n\nLOGO language, \n36\n\n\nlong descriptive names, \n39\n\n\nlong names, for long scopes, \n312\n\n\nloop counters, single-letter names for, \n25\n\n\nM\n\n\nmagic numbers\n\n\nobscuring intent, \n295\n\n\nreplacing with named constants, \n300\u2013301\n\n\nmain\n function, moving construction to, \n155\n, \n156\n\n\nmanagers, role of, \n6\n\n\nmandated comments, \n63\n\n\nmanual control, over a serial ID, \n272\n\n\nMap\n\n\nadding for \nArgumentMarshaler\n, \n221\n\n\nmethods of, \n114\n\n\nmaps, breaking the use of, \n222\u2013223\n\n\nmarshalling implementation, \n214\u2013215\n\n\nmeaningful context, \n27\u201329\n\n\nmember variables\n\n\nf\n prefix for, \n257\n\n\nprefixing, \n24\n\n\nrenaming for clarity, \n259\n\n\nmental mapping, avoiding, \n25\n\n\nmessy code. \nSee also\n\n\nbad code\n; \ndirty code\n total cost of owning, \n4\u201312\n\n\nmethod invocations, \n324\n\n\nmethod names, \n25\n\n\nmethods\n\n\naffecting the order of execution, \n188\n\n\ncalling a twin with a flag, \n278\n\n\nchanging from static to instance, \n280\n\n\nof classes, \n140\n\n\ndependencies between, \n329\u2013333\n\n\neliminating duplication between, \n173\u2013174\n\n\nminimizing assert statements in, \n176\n\n\nnaming, \n25\n\n\ntests exposing bugs in, \n269\n\n\nminimal code, \n9\n\n\nmisleading comments, \n63\n\n\nmisplaced responsibility, \n295\u2013296\n, \n299\n\n\nMOCK OBJECT, assigning, \n155\n\n\nmonadic argument, \n40\n\n\nmonadic forms, of arguments, \n41\n\n\nmonads, converting dyads into, \n42\n\n\nMonte Carlo testing, \n341\n\n\nMonth\n enum, \n278\n\n\nMonthConstants\n class, \n271\n\n\nmultithread aware, \n332\n\n\nmultithread-calculation, of throughput, \n335\n\n\nmultithreaded code, \n188\n, \n339\u2013342\n\n\nmumbling, \n59\u201360\n\n\nmutators, naming, \n25\n\n\nmutual exclusion, \n183\n, \n336\n, \n337\n\n\nN\n\n\nnamed constants, replacing magic numbers, \n300\u2013301\n\n\nname-length-challenged languages, \n23\n\n\nnames\n\n\nabstractions, appropriate level of, \n311\n\n\nchanging, \n40\n\n\nchoosing, \n175\n, \n309\u2013310\n\n\nof classes, \n270\u2013271\n\n\nclever, \n26\n\n\ndescriptive, \n39\u201340\n\n\nof functions, \n297\n\n\nheuristics on, \n309\u2013313\n\n\nimportance of, \n309\u2013310\n\n\nintention-revealing, \n18\u201319\n\n\nlength of corresponding to scope, \n22\u201323\n\n\nlong names for long scopes, \n312\n\n\nmaking unambiguous, \n258\n\n\nproblem domain, \n27\n\n\npronounceable, \n21\u201322\n\n\nrules for creating, \n18\u201330\n\n\nsearchable, \n22\u201323\n\n\nshorter generally better than longer, \n30\n\n\nsolution domain, \n27\n\n\nwith subtle differences, \n20\n\n\nunambiguous, \n312\n\n\nat the wrong level of abstraction, \n271\n\n\nnaming, classes, \n138\n\n\nnaming conventions, as inferior to structures, \n301\n\n\nnavigational methods, in Active Records, \n101\n\n\nnear bugs, testing, \n314\n\n\nnegative conditionals, avoiding, \n302\n\n\nnegatives, \n258\n\n\nnested structures, \n46\n\n\nNewkirk, Jim, \n116\n\n\nnewspaper metaphor, \n77\u201378\n\n\nniladic argument, \n40\n\n\nno preemption, \n337\n\n\nnoise\n\n\ncomments, \n64\u201366\n\n\nscary, \n66\n\n\nwords, \n21\n\n\nnomenclature, using standard, \n311\u2013312\n\n\nnonblocking solutions, \n327\u2013328\n\n\nnonconcurrency-related code, \n181\n\n\nnoninformative names, \n21\n\n\nnonlocal information, \n69\u201370\n\n\nnonpublic code, javadocs in, \n71\n\n\nnonstatic methods, preferred to static, \n296\n\n\nnonthreaded code, getting working first, \n187\n\n\nnonthread-safe classes, \n328\u2013329\n\n\nnormal flow, \n109\n\n\nnull\n\n\nnot passing into methods, \n111\u2013112\n\n\nnot returning, \n109\u2013110\n\n\npassed by a caller accidentally, \n111\n\n\nnull detection logic, for \nArgumentMarshaler\n, \n214\n\n\nNullPointerException\n, \n110\n, \n111\n\n\nnumber-series naming, \n21\n\n\nO\n\n\nObject Oriented Analysis and Design with Applications\n, \n8\n\n\nobject-oriented design, \n15\n\n\nobjects\n\n\ncompared to data structures, \n95\n, \n97\n\n\ncompared to data types and procedures, \n101\n\n\ncopying read-only, \n181\n\n\ndefined, \n95\n\n\nobscured intent, \n295\n\n\nobsolete comments, \n286\n\n\nobvious behavior, \n288\u2013289\n\n\nobvious code, \n12\n\n\n\u201cOnce and only once\u201d principle, \n289\n\n\n\u201c\nONE SWITCH\n\u201d rule, \n299\n\n\none thing, functions doing, \n35\u201336\n, \n302\n\n\none-offs, \n180\n, \n187\n, \n191\n\n\nOO code, \n97\n\n\nOO design, \n139\n\n\nOpen Closed Principle (OCP), \n15\n, \n38\n\n\nby checked exceptions, \n106\n\n\nsupporting, \n149\n\n\noperand stack, \n324\n\n\noperating systems, threading policies, \n188\n\n\noperators, precedence of, \n86\n\n\noptimistic locking, \n327\n\n\noptimizations, LAZY-EVALUATION as, \n157\n\n\noptimizing, decision making, \n167\u2013168\n\n\norderings, calculating the possible, \n322\u2013323\n\n\norganization\n\n\nfor change, \n147\u2013150\n\n\nof classes, \n136\n\n\nmanaging complexity, \n139\u2013140\n\n\noutbound tests, exercising an interface, \n118\n\n\noutput arguments, \n41\n, \n288\n\n\navoiding, \n45\n\n\nneed for disappearing, \n45\n\n\noutputs, arguments as, \n45\n\n\noverhead, incurred by concurrency, \n179\n\n\noverloading, of code with description, \n310\n\n\nP\n\n\npaperback model, as an academic model, \n27\n\n\nparameters, taken by instructions, \n324\n\n\nparse\n operation, throwing an exception, \n220\n\n\npartitioning, \n250\n\n\npaths of execution, \n321\u2013326\n\n\npathways, through critical sections, \n188\n\n\npattern names, using standard, \n175\n\n\npatterns\n\n\nof failure, \n314\n\n\nas one kind of standard, \n311\n\n\nperformance\n\n\nof a client/server pair, \n318\n\n\nconcurrency improving, \n179\n\n\nof server-based locking, \n333\n\n\npermutations, calculating, \n323\n\n\npersistence, \n160\n, \n161\n\n\npessimistic locking, \n327\n\n\nphraseology, in similar names, \n40\n\n\nphysicalizing, a dependency, \n299\n\n\nPlain-Old Java Objects. \nSee\n\n\nPOJOs\n platforms, running threaded code, \n188\n\n\npleasing code, \n7\n\n\npluggable thread-based code, \n187\n\n\nPOJO system, agility provided by, \n168\n\n\nPOJOs (Plain-Old Java Objects)\n\n\ncreating, \n187\n\n\nimplementing business logic, \n162\n\n\nseparating threaded-aware code, \n190\n\n\nin Spring, \n163\n\n\nwriting application domain logic, \n166\n\n\npolyadic argument, \n40\n\n\npolymorphic behavior, of functions, \n296\n\n\npolymorphic changes, \n96\u201397\n\n\npolymorphism, \n37\n, \n299\n\n\nposition markers, \n67\n\n\npositives\n\n\nas easier to understand, \n258\n\n\nexpressing conditionals as, \n302\n\n\nof decisions, \n301\nprecision\n\n\nas the point of all naming, \n30\n\n\npredicates, naming, \n25\n\n\npreemption, breaking, \n338\n\n\nprefixes\n\n\nfor member variables, \n24\n\n\nas useless in today\u2019s environments, \n312\u2013313\n\n\npre-increment operator, \n++\n, \n324\n, \n325\n, \n326\n\n\n\u201cprequel\u201d, this book as, \n15\n\n\nprinciple of least surprise, \n288\u2013289\n, \n295\n\n\nprinciples, of design, \n15\n\n\nPrintPrimes\n program, translation into Java, \n141\n\n\nprivate behavior, isolating, \n148\u2013149\n\n\nprivate functions, \n292\n\n\nprivate method behavior, \n147\n\n\nproblem domain names, \n27\n\n\nprocedural code, \n97\n\n\nprocedural shape example, \n95\u201396\n\n\nprocedures, compared to objects, \n101\n\n\nprocess function, repartitioning, \n319\u2013320\n\n\nprocess\n method, I/O bound, \n319\n\n\nprocesses, competing for resources, \n184\n\n\nprocessor bound, code as, \n318\n\n\nproducer consumer execution model, \n184\n\n\nproducer threads, \n184\n\n\nproduction environment, \n127\u2013130\n\n\nproductivity, decreased by messy code, \n4\n\n\nprofessional programmer, \n25\n\n\nprofessional review, of code, \n268\n\n\nprogrammers\n\n\nas authors, \n13\u201314\n\n\nconundrum faced by, \n6\n\n\nresponsibility for messes, \n5\u20136\n\n\nunprofessional, \n5\u20136\n\n\nprogramming\n\n\ndefined, \n2\n\n\nstructured, \n48\u201349\n\n\nprograms, getting them to work, \n201\n\n\npronounceable names, \n21\u201322\n\n\nprotected variables, avoiding, \n80\n\n\nproxies, drawbacks of, \n163\n\n\npublic APIs, javadocs in, \n59\n\n\npuns, avoiding, \n26\u201327\n\n\nPUTFIELD\n instruction, as atomic, \n325\n\n\nQ\n\n\nqueries, separating from commands, \n45\u201346\n\n\nR\n\n\nrandom jiggling, tests running, \n190\n\n\nrange, including end-point dates in, \n276\n\n\nreadability\n\n\nof clean tests, \n124\n\n\nof code, \n76\n\n\nDave Thomas on, \n9\n\n\nimproving using generics, \n115\n\n\nreadability perspective, \n8\n\n\nreaders\n\n\nof code, \n13\u201314\n\n\ncontinuous, \n184\n\n\nreaders-writers execution model, \n184\n\n\nreading\n\n\nclean code, \n8\n\n\ncode from top to bottom, \n37\n\n\nversus writing, \n14\n\n\nreboots, as a lock up solution, \n331\n\n\nrecommendations, in this book, \n13\n\n\nredesign, demanded by the team, \n5\n\n\nredundancy, of noise words, \n21\n\n\nredundant comments, \n60\u201362\n, \n272\n, \n275\n, \n286\u2013287\n\n\nReentrantLock\n class, \n183\n\n\nrefactored programs, as longer, \n146\n\n\nrefactoring\n\n\nArgs\n, \n212\n\n\ncode incrementally, \n172\n\n\nas an iterative process, \n265\n\n\nputting things in to take out, \n233\n\n\ntest code, \n127\n\n\nRefactoring\n (Fowler), \n285\n\n\nrenaming, fear of, \n30\n\n\nrepeatability, of concurrency bugs, \n180\n\n\nrepeatable tests, \n132\n\n\nrequirements, specifying, \n2\n\n\nresetId\n, byte-code generated for, \n324\u2013325\n\n\nresources\n\n\nbound, \n183\n\n\nprocesses competing for, \n184\n\n\nthreads agreeing on a global ordering of, \n338\n\n\nresponsibilities\n\n\ncounting in classes, \n136\n\n\ndefinition of, \n138\n\n\nidentifying, \n139\n\n\nmisplaced, \n295\u2013296\n, \n299\n\n\nsplitting a program into main, \n146\n\n\nreturn codes, using exceptions instead, \n103\u2013105\n\n\nreuse, \n174\n\n\nrisk of change, reducing, \n147\n\n\nrobust clear code, writing, \n112\n\n\nrough drafts, writing, \n200\n\n\nrunnable\n interface, \n326\n\n\nrun-on expressions, \n295\n\n\nrun-on journal entries, \n63\u201364\n\n\nruntime logic, separating startup from, \n154\n\n\nS\n\n\nsafety mechanisms, overridden, \n289\n\n\nscaling up, \n157\u2013161\n\n\nscary noise, \n66\n\n\nschema, of a class, \n194\n\n\nschools of thought, about clean code, \n12\u201313\n\n\nscissors rule, in C++, \n81\n\n\nscope(s)\n\n\ndefined by exceptions, \n105\n\n\ndummy, \n90\n\n\nenvying, \n293\n\n\nexpanding and indenting, \n89\n\n\nhierarchy in a source file, \n88\n\n\nlimiting for data, \n181\n\n\nnames related to the length of, \n22\u201323\n, \n312\n\n\nof shared variables, \n333\n\n\nsearchable names, \n22\u201323\n\n\nSecond Law, of TDD, \n122\n\n\nsections, within functions, \n36\n\n\nselector arguments, avoiding, \n294\u2013295\n\n\nself validating tests, \n132\n\n\nSemaphore\n class, \n183\n\n\nsemicolon, making visible, \n90\n\n\n\u201cserial number\u201d, \nSerialDate\n using, \n271\n\n\nSerialDate\n class\n\n\nmaking it right, \n270\u2013284\n\n\nnaming of, \n270\u2013271\n\n\nrefactoring, \n267\u2013284\n\n\nSerialDateTests\n class, \n268\n\n\nserialization, \n272\n\n\nserver, threads created by, \n319\u2013321\n\n\nserver application, \n317\u2013318\n, \n343\u2013344\n\n\nserver code, responsibilities of, \n319\n\n\nserver-based locking, \n329\n\n\nas preferred, \n332\u2013333\n\n\nwith synchronized methods, \n185\n\n\n\u201cServlet\u201d model, of Web applications, \n178\n\n\nServlets\n, synchronization problems, \n182\n\n\nset\n functions, moving into appropriate derivatives, \n232\n, \n233\u2013235\n\n\nsetArgument\n, changing, \n232\u2013233\n\n\nsetBoolean\n function, \n217\n\n\nsetter methods, injecting dependencies, \n157\n\n\nsetup strategy, \n155\n\n\nSetupTeardownIncluder.java\n listing, \n50\u201352\n\n\nshape classes, \n95\u201396\n\n\nshared data, limiting access, \n181\n\n\nshared variables\n\n\nmethod updating, \n328\n\n\nreducing the scope of, \n333\n\n\nshotgun approach, hand-coded instrumentation as, \n189\n\n\nshut-down code, \n186\n\n\nshutdowns, graceful, \n186\n\n\nside effects\n\n\nhaving none, \n44\n\n\nnames describing, \n313\n\n\nSimmons, Robert, \n276\n\n\nsimple code, \n10\n, \n12\n\n\nSimple Design, rules of, \n171\u2013176\n\n\nsimplicity, of code, \n18\n, \n19\n\n\nsingle assert rule, \n130\u2013131\n\n\nsingle concepts, in each test function, \n131\u2013132\n\n\nSingle Responsibility Principle (SRP), \n15\n, \n138\u2013140\n\n\napplying, \n321\n\n\nbreaking, \n155\n\n\nas a concurrency defense principle, \n181\n\n\nrecognizing violations of, \n174\n\n\nserver violating, \n320\n\n\nSql\n class violating, \n147\n\n\nsupporting, \n157\n\n\nin test classes conforming to, \n172\n\n\nviolating, \n38\n\n\nsingle value, ordered components of, \n42\n\n\nsingle-letter names, \n22\n, \n25\n\n\nsingle-thread calculation, of throughput, \n334\n\n\nSINGLETON pattern, \n274\n\n\nsmall classes, \n136\n\n\nSmalltalk Best Practice Patterns\n, \n296\n\n\nsmart programmer, \n25\n\n\nsoftware project, maintenance of, \n175\n\n\nsoftware systems. \nSee also\n\n\nsystem(s)\n\n\ncompared to physical systems, \n158\n\n\nSOLID class design principle, \n150\n\n\nsolution domain names, \n27\n\n\nsource code control systems, \n64\n, \n68\n, \n69\n\n\nsource files\n\n\ncompared to newspaper articles, \n77\u201378\n\n\nmultiple languages in, \n288\n\n\nSparkle\n program, \n34\n\n\nspawned threads, deadlocked, \n186\n\n\nspecial case objects, \n110\n\n\nSPECIAL CASE PATTERN, \n109\n\n\nspecifications, purpose of, \n2\n\n\nspelling errors, correcting, \n20\n\n\nSpreadsheetDateFactory\n, \n274\u2013275\n\n\nSpring AOP, proxies in, \n163\n\n\nSpring Framework, \n157\n\n\nSpring model, following EJB3, \n165\n\n\nSpring V2.5 configuration file, \n163\u2013164\n\n\nspurious failures, \n187\n\n\nSql\n class, changing, \n147\u2013149\n\n\nsquare root, as the iteration limit, \n74\n\n\nSRP. \nSee\n\n\nSingle Responsibility Principle\n\n\nstandard conventions, \n299\u2013300\n\n\nstandard nomenclature, \n175\n, \n311\u2013312\n\n\nstandards, using wisely, \n168\n\n\nstartup process, separating from runtime logic, \n154\n\n\nstarvation, \n183\n, \n184\n, \n338\n\n\nstatic function, \n279\n\n\nstatic import, \n308\n\n\nstatic methods, inappropriate, \n296\n\n\nThe Step-down Rule\n, \n37\n\n\nstories, implementing only today\u2019s, \n158\n\n\nSTRATEGY pattern, \n290\n\n\nstring\n arguments, \n194\n, \n208\u2013212\n, \n214\u2013225\n\n\nstring comparison errors, \n252\n\n\nStringBuffers\n, \n129\n\n\nStroustrup, Bjarne, \n7\u20138\n\n\nstructure(s). \nSee also\n\n\ndata structures\n\n\nhiding, \n99\n\n\nhybrid, \n99\n\n\nmaking massive changes to, \n212\n\n\nover convention, \n301\n\n\nstructured programming, \n48\u201349\n\n\nSuperDashboard\n class, \n136\u2013137\n\n\nswapping, as permutations, \n323\n\n\nswitch\n statements\n\n\nburying, \n37\n, \n38\n\n\nconsidering polymorphism before, \n299\n\n\nreasons to tolerate, \n38\u201339\n\n\nswitch/case\n chain, \n290\n\n\nsynchronization problems, avoiding with \nServlets\n, \n182\n\n\nsynchronized\n block, \n334\n\n\nsynchronized\n keyword, \n185\n\n\nadding, \n323\n\n\nalways acquiring a lock, \n328\n\n\nintroducing a lock via, \n331\n\n\nprotecting a critical section in code, \n181\n\n\nsynchronized methods, \n185\n\n\nsynchronizing, avoiding, \n182\n\n\nsynthesis functions, \n265\n\n\nsystem(s). \nSee also\n\n\nsoftware systems\n\n\nfile sizes of significant, \n77\n\n\nkeeping running during development, \n213\n\n\nneeding domain-specific, \n168\n\n\nsystem architecture, test driving, \n166\u2013167\n\n\nsystem failures, not ignoring one-offs, \n187\n\n\nsystem level, staying clean at, \n154\n\n\nsystem-wide information, in a local comment, \n69\u201370\n\n\nT\n\n\ntables, moving, \n275\n\n\ntarget deployment platforms, running tests on, \n341\n\n\ntask swapping, encouraging, \n188\n\n\nTDD (Test Driven Development), \n213\n\n\nbuilding logic, \n106\n\n\nas fundamental discipline, \n9\n\n\nlaws of, \n122\u2013123\n\n\nteam rules, \n90\n\n\nteams\n\n\ncoding standard for every, \n299\u2013300\n\n\nslowed by messy code, \n4\n\n\ntechnical names, choosing, \n27\n\n\ntechnical notes, reserving comments for, \n286\n\n\nTEMPLATE METHOD pattern\n\n\naddressing duplication, \n290\n\n\nremoving higher-level duplication, \n174\u2013175\n\n\nusing, \n130\n\n\ntemporal coupling. \nSee also\n\n\ncoupling\n\n\nexposing, \n259\u2013260\n\n\nhidden, \n302\u2013303\n\n\nside effect creating, \n44\n\n\ntemporary variables, explaining, \n279\u2013281\n\n\ntest cases\n\n\nadding to check arguments, \n237\n\n\nin \nComparisonCompactor\n, \n252\u2013254\n\n\npatterns of failure, \n269\n, \n314\n\n\nturning off, \n58\n\n\ntest code, \n124\n, \n127\n\n\nTEST DOUBLE, assigning, \n155\n\n\nTest Driven Development. \nSee\n\n\nTDD\n\n\ntest driving, architecture, \n166\u2013167\n\n\ntest environment, \n127\u2013130\n\n\ntest functions, single concepts in, \n131\u2013132\n\n\ntest implementation, of an interface, \n150\n\n\ntest suite\n\n\nautomated, \n213\n\n\nof unit tests, \n124\n, \n268\n\n\nverifying precise behavior, \n146\n\n\ntestable systems, \n172\n\n\ntest-driven development. \nSee\n\n\nTDD\n\n\ntesting\n\n\narguments making harder, \n40\n\n\nconstruction logic mixed with runtime, \n155\n\n\ntesting language, domain-specific, \n127\n\n\ntestNG project, \n76\n, \n77\n\n\ntests\n\n\nclean, \n124\u2013127\n\n\ncleanliness tied to, \n9\n\n\ncommented out for \nSerialDate\n, \n268\u2013270\n\n\ndirty, \n123\n\n\nenabling the -ilities, \n124\n\n\nfast, \n132\n\n\nfast versus slow, \n314\n\n\nheuristics on, \n313\u2013314\n\n\nignored, \n313\n\n\nindependent, \n132\n\n\ninsufficient, \n313\n\n\nkeeping clean, \n123\u2013124\n\n\nminimizing assert statements in, \n130\u2013131\n\n\nnot stopping trivial, \n313\n\n\nrefactoring, \n126\u2013127\n\n\nrepeatable, \n132\n\n\nrequiring more than one step, \n287\n\n\nrunning, \n341\n\n\nself validating, \n132\n\n\nsimple design running all, \n172\n\n\nsuite of automated, \n213\n\n\ntimely, \n133\n\n\nwriting for multithreaded code, \n339\u2013342\n\n\nwriting for threaded code, \n186\u2013190\n\n\nwriting good, \n122\u2013123\n\n\nThird Law, of TDD, \n122\n\n\nthird-party code integrating, \n116\n\n\nlearning, \n116\n\n\nusing, \n114\u2013115\n\n\nwriting tests for, \n116\n\n\nthis\n variable, \n324\n\n\nThomas, Dave, \n8\n, \n9\n, \n289\n\n\nthread(s)\n\n\nadding to a method, \n322\n\n\ninterfering with each other, \n330\n\n\nmaking as independent as possible, \n182\n\n\nstepping on each other, \n180\n, \n326\n\n\ntaking resources from other threads, \n338\n\n\nthread management strategy, \n320\n\n\nthread pools, \n326\n\n\nthread-based code, testing, \n342\n\n\nthreaded code making pluggable, \n187\n\n\nmaking tunable, \n187\u2013188\n\n\nsymptoms of bugs in, \n187\n\n\ntesting, \n186\u2013190\n\n\nwriting in Java \n5\n, \n182\u2013183\n\n\nthreading\n\n\nadding to a client/server application, \n319\n, \n346\u2013347\n\n\nproblems in complex systems, \n342\n\n\nthread-safe collections, \n182\u2013183\n, \n329\n\n\nthroughput\n\n\ncausing starvation, \n184\n\n\nimproving, \n319\n\n\nincreasing, \n333\u2013335\n\n\nvalidating, \n318\n\n\nthrows\n clause, \n106\n\n\ntiger team, \n5\n\n\ntight coupling, \n172\n\n\ntime, taking to go fast, \n6\n\n\nTime and Money project, \n76\n\n\nfile sizes, \n77\n\n\ntimely tests, \n133\n\n\ntimer program, testing, \n121\u2013122\n\n\n\u201cTO\u201d keyword, \n36\n\n\nTO paragraphs, \n37\n\n\nTODO\n comments, \n58\u201359\n\n\ntokens, used as magic numbers, \n300\n\n\nTomcat project, \n76\n, \n77\n\n\ntools\n\n\nConTest tool, \n190\n, \n342\n\n\ncoverage, \n313\n\n\nhandling proxy boilerplate, \n163\n\n\ntesting thread-based code, \n342\n\n\ntrain wrecks, \n98\u201399\n\n\ntransformations, as return values, \n41\n\n\ntransitive navigation, avoiding, \n306\u2013307\n\n\ntriadic argument, \n40\n\n\ntriads, \n42\n\n\ntry\n blocks, \n105\n\n\ntry/catch\n blocks, \n46\u201347\n, \n65\u201366\n\n\ntry-catch-finally\n statement, \n105\u2013106\n\n\ntunable threaded-based code, \n187\u2013188\n\n\ntype encoding, \n24\n\n\nU\n\n\nubiquitous language, \n311\u2013312\n\n\nunambiguous names, \n312\n\n\nunchecked exceptions, \n106\u2013107\n\n\nunencapsulated conditional, encapsulating, \n257\n\n\nunit testing, isolated as difficult, \n160\n\n\nunit tests, \n124\n, \n175\n, \n268\n\n\nunprofessional programming, \n5\u20136\n\n\nuppercase \nC\n, in variable names, \n20\n\n\nusability, of newspapers, \n78\n\n\nuse, of a system, \n154\n\n\nusers, handling concurrently, \n179\n\n\nV\n\n\nvalidation, of throughput, \n318\n\n\nvariable names, single-letter, \n25\n\n\nvariables\n\n\n1 based versus zero based, \n261\n\n\ndeclaring, \n80\n, \n81\n, \n292\n\n\nexplaining temporary, \n279\u2013281\n\n\nexplanatory, \n296\u2013297\n\n\nkeeping private, \n93\n\n\nlocal, \n292\n, \n324\n\n\nmoving to a different class, \n273\n\n\nin place of comments, \n67\n\n\npromoting to instance variables of classes, \n141\n\n\nwith unclear context, \n28\n\n\nventing, in comments, \n65\n\n\nverbs, keywords and, \n43\n\n\nVersion\n class, \n139\n\n\nversions, not deserializing across, \n272\n\n\nvertical density, in code, \n79\u201380\n\n\nvertical distance, in code, \n80\u201384\n\n\nvertical formatting, \n76\u201385\n\n\nvertical openness, between concepts, \n78\u201379\n\n\nvertical ordering, in code, \n84\u201385\n\n\nvertical separation, \n292\n\n\nW\n\n\nwading, through bad code, \n3\n\n\nWeb containers, decoupling provided by, \n178\n\n\nwhat, decoupling from when, \n178\n\n\nwhite space, use of horizontal, \n86\n\n\nwildcards, \n307\n\n\nWorking Effectively with Legacy Code\n, \n10\n\n\n\u201cworking\u201d programs, \n201\n\n\nworkmanship, \n176\n\n\nwrappers, \n108\n\n\nwrapping, \n108\n\n\nwriters, starvation of, \n184\n\n\n\u201cWriting Shy Code\u201d, \n306\n\n\nX\n\n\nXML\n\n\ndeployment descriptors, \n160\n\n\n\u201cpolicy\u201d specified configuration files, \n164"
+    }
+}
